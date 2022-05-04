@@ -7,14 +7,15 @@ let ship;
 
 function setup() {
     createCanvas( w, h );
-    ship = new Ship(w/2,h/2);
+    ship = new Ship(w/2,h/2, 10);
 }
 
 function draw() {
     background( 240 );
     ship.show();
     ship.turn();
-    ship.update();
+    ship.move();
+    ship.edge();
 }
 
 
@@ -24,21 +25,24 @@ function keyPressed(){
     } else if (keyCode == LEFT_ARROW){
         ship.setRotation(-0.1);
     } else if (keyCode == UP_ARROW){
-        ship.boost();
+        ship.setBoostingState(true);
     }
 }
 
 function keyReleased(){
     ship.setRotation(0);
+    ship.setBoostingState(false);
 }
 
 
 
 class Ship{
-    constructor(x,y){
+    constructor(x,y,r){
         this.pos = createVector(x,y)
+        this.radius = r;
         this.heading = PI/2;
         this.rotation = 0;
+        this.boosting = false;
         this.vel = createVector(0,0);
     }
 
@@ -48,7 +52,7 @@ class Ship{
         fill(255,0,0);
         translate(this.pos.x, this.pos.y);
         rotate(this.heading + PI/2);
-        triangle(-10,10,10,10,0,-15);
+        triangle(-this.radius,this.radius,this.radius,this.radius,0,-this.radius*3/2);
         pop();
     }
 
@@ -60,15 +64,33 @@ class Ship{
         this.heading +=this.rotation;
     }
 
+    setBoostingState(b) {
+        this.boosting = b;
+    }
+
     boost() {
         var force  = p5.Vector.fromAngle(this.heading);
+        force.mult(0.1);
         this.vel.add(force);
     }
 
-    update() {
+    move() {
+        if(this.boosting){
+            this.boost();
+        }
         this.pos.add(this.vel);
-        this.vel.mult(0.95);
+        this.vel.mult(0.97);
     }
 
 
+    edge(){
+        if(this.pos.x > w + this.radius) //right border
+            this.pos.x = -this.radius;
+        else if (this.pos.x < -this.radius) //left border
+            this.pos.x = w + this.radius;
+        else if (this.pos.y < -this.radius) //top border
+            this.pos.y = h + this.radius;
+        else if (this.pos.y > h + this.radius) //bottom border
+            this.pos.y = -this.radius;
+    }
 }
