@@ -2,6 +2,7 @@ var w = 800;
 var h = 550;
 var ship;
 var asteroids = [];
+var lasers = [];
 
 
 
@@ -16,14 +17,32 @@ function setup() {
 
 function draw() {
     background( 240 );
+    
+    for(var i=0; i<asteroids.length;i++){
+        asteroids[i].render();
+        asteroids[i].move();
+        asteroids[i].edge();
+    }
+
+    for(var i=lasers.length-1; i>=0; i--){
+        lasers[i].render();
+        lasers[i].move();
+        for(var j=asteroids.length-1; j>=0; j--){
+            if(lasers[i].hits(asteroids[j])){
+                var newAsteroids = asteroids[j].breakeup();
+                console.log(newAsteroids);
+                asteroids = asteroids.concat(newAsteroids);
+                asteroids.splice(j,1);
+                lasers.splice(i,1);
+                break;
+            }
+        }
+    }
+
     ship.show();
     ship.turn();
     ship.move();
     ship.edge();
-
-    for(var i=0; i<asteroids.length;i++){
-        asteroids[i].render()
-    }
 }
 
 
@@ -34,6 +53,8 @@ function keyPressed(){
         ship.setRotation(-0.1);
     } else if (keyCode == UP_ARROW){
         ship.setBoostingState(true);
+    } else if (key == ' '){
+        lasers.push(new Laser(ship.pos, ship.heading));
     }
 }
 
