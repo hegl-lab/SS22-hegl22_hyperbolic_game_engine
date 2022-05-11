@@ -54,6 +54,14 @@ class Asteroid{
             newAsteroids[0] = new Asteroid(this.pos, this.radius*0.5);
             newAsteroids[1] = new Asteroid(this.pos, this.radius*0.5);
         }
+        score += 10;
+        if (score > 200){
+            level++;
+            score = 0;
+            console.log("next level")
+        }
+
+        console.log(score);
         return newAsteroids;
     }
 }
