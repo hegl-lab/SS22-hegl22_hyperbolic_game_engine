@@ -6,7 +6,7 @@ class Asteroid{
             this.pos = createVector(random(w),random(h));
         }
         if(radius){
-            this.radius = radius*0.5;
+            this.radius = radius;
         } else {
             this.radius = random(15,70);
         }
@@ -50,8 +50,10 @@ class Asteroid{
 
     breakeup(){
         var newAsteroids = [];
-        newAsteroids[0] = new Asteroid(this.pos, this.radius);
-        newAsteroids[1] = new Asteroid(this.pos, this.radius);
+        if (this.radius > 10){
+            newAsteroids[0] = new Asteroid(this.pos, this.radius*0.5);
+            newAsteroids[1] = new Asteroid(this.pos, this.radius*0.5);
+        }
         return newAsteroids;
     }
 }
