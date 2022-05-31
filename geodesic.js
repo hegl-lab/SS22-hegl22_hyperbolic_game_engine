@@ -4,7 +4,12 @@ class Geodesic {
         this.pt1 = new Point(x,y,v1,v2);
         this.circle = circle;
         this.pt2 = this.circle.reflectPoint(this.pt1);
-        this.m = this.pt1.createCircleDir(this.pt2);
+        if(this.pt1.x == this.circle.x && this.pt1.y == this.circle.y){ //pt1 is midpoint of circle
+            this.m = new LineSegment(this.pt1.x-300*this.pt1.dir.x,this.pt1.y-300*this.pt1.dir.y, (this.pt1.x+300*this.pt1.dir.x), (this.pt1.y + 300*this.pt1.dir.y))
+        }
+        else {
+            this.m = this.pt1.createCircleDir(this.pt2);
+        }
     }
 
     show(){
@@ -54,11 +59,10 @@ class Point {
         
         let eps = 0.00001
         if (dist(m1,m2,x1,y1) - radius > eps){ //both points has to be on circle
-            console.log(1);
             m1 = this.x + radius*diry;
             m2 = this.y - radius*dirx;
         }
-        let c = new Circle(m1, m2, radius*2);
+        let c = new Circle(m1, m2, radius);
         return c;
     }
 
@@ -84,7 +88,7 @@ class Circle {
         push();
         stroke(0);
         noFill();
-        circle(this.x,this.y,this.r);
+        circle(this.x,this.y,this.r*2);
         pop();
     }
 
@@ -92,9 +96,9 @@ class Circle {
         let x0 = pt0.x;
         let y0 = pt0.y;
         let len1 = dist(this.x, this.y, x0, y0);
-        let len2 = this.r/len1;
-        let x1 = this.x + len2*(x0-this.x);
-        let y1 = this.y + len2*(y0-this.y);
+        let len2 = (this.r*this.r)/len1;
+        let x1 = this.x + len2*(x0-this.x)/len1;
+        let y1 = this.y + len2*(y0-this.y)/len1;
         let pt = new Point(x1,y1);
         return pt;
     }

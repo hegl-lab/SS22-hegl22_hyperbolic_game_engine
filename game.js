@@ -12,9 +12,9 @@ let circle0, m, geodesic;
 
 function setup() {
     createCanvas( w, h );
-    circle0 = new Circle(0,0,500);
+    circle0 = new Circle(0,0,250);
     m = new Point(0,0);
-    geodesic = new Geodesic(10,0, 0, 10, circle0); //für Mittelpunkt von Kreis funktioniert es noch nicht
+    geodesic = new Geodesic(10,-1, 10, 0, circle0); //für Mittelpunkt von Kreis funktioniert es noch nicht
     /*ship = new Ship(w/2,h/2, 10);
     for (let i = 0; i < 5; i++) {       
         asteroids.push(new Asteroid());
