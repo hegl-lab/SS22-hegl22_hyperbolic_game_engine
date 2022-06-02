@@ -8,13 +8,24 @@ var score = 0;
 var level = 1;
 
 
-let circle0, m, point1, geodesic, pointM;
+let circle0, m, geodesic, pointM;
 
 function setup() {
     createCanvas( w, h );
     circle0 = new Circle(0,0,250);
     m = new Point(0,0);
     pointM = new PointWithMovingGeodesic(10,-100,10,4,circle0);
+
+    for(let i = 0; i<100; i++){
+        var x = random(-150,150);
+        var y = random(-150,150);
+        var v1 = random(-10,10);
+        var v2 = random(-10,10);
+        var speed = random(-10,10);
+        if (speed == 0)
+            speed += 1;
+        asteroids.push(new PointMovingOnGeodesic(x,y,v1,v2,circle0,speed));
+    }
     //point1 = new Point(10,-100,10,4);
     //geodesic = new Geodesic(point1, circle0); //für Mittelpunkt von Kreis funktioniert es noch nicht
     /*ship = new Ship(w/2,h/2, 10);
@@ -32,7 +43,12 @@ function draw() {
     m.show();
     pointM.show();
     pointM.move();
-    //point1.show();
+    for(let i=0; i<100; i++){
+        asteroids[i].show();
+        asteroids[i].move();
+    }
+    //pointX.show();
+    //pointX.move();
     //geodesic.show();
     //point1.move(x,y);
 

@@ -22,6 +22,34 @@ class Geodesic {
 }
 
 
+class PointMovingOnGeodesic {
+    constructor( x, y , v1, v2, circle, speed){
+        this.pt = new Point(x,y,v1,v2);
+        this.circle = circle;
+        this.geodesic = new Geodesic(this.pt, circle); //radius, x,y coordinate of midpoint
+        this.alpha = Math.acos((x-this.geodesic.m.x)/this.geodesic.m.r);
+        this.speed = speed;
+    }
+
+    show() {
+        push();
+        this.pt.show();
+        //this.geodesic.show();
+        pop();
+    }
+
+    move() {
+        this.alpha = this.alpha + 1/(this.speed*this.geodesic.m.r);
+        var newX = this.geodesic.m.r*Math.cos(this.alpha) + this.geodesic.m.x;
+        var newY = this.geodesic.m.r*Math.sin(this.alpha) + this.geodesic.m.y;
+        var newV1 = 0;
+        var newV2 = 0;
+        this.pt = new Point(newX, newY, newV1, newV2);
+    }
+}
+
+
+
 class PointWithMovingGeodesic {
     constructor( x, y , v1, v2, circle){
         this.pt = new Point(x,y,v1,v2);
