@@ -1,7 +1,7 @@
 
 class Geodesic {
-    constructor(x, y, v1, v2, circle){
-        this.pt1 = new Point(x,y,v1,v2);
+    constructor(pt1, circle){
+        this.pt1 = pt1;
         this.circle = circle;
         this.pt2 = this.circle.reflectPoint(this.pt1);
         if(this.pt1.x == this.circle.x && this.pt1.y == this.circle.y){ //pt1 is midpoint of circle
@@ -14,18 +14,57 @@ class Geodesic {
 
     show(){
         push();
-        this.pt1.show();
-        this.pt2.show();
+        //this.pt1.show();
+        //this.pt2.show();
         this.m.show();
         pop();
     }
 }
 
 
+class PointWithMovingGeodesic {
+    constructor( x, y , v1, v2, circle){
+        this.pt = new Point(x,y,v1,v2);
+        this.circle = circle;
+        this.geodesic = new Geodesic(this.pt, circle);
+        this.boosting = false;
+        this.vel = createVector(0,0);
+    }
+
+    show() {
+        push();
+        this.pt.show();
+        this.geodesic.show();
+        pop();
+    }
+
+    setBoostingState(b) {
+        this.boosting = b;
+    }
+
+    boost(x,y) {
+        var force  = createVector(x,y);
+        //force.mult(0.1);
+        this.vel.add(force);
+    }
+
+    move() {
+        var newX = this.pt.x + this.vel.x;
+        var newY = this.pt.y + this.vel.y;
+        this.pt = new Point(newX, newY, this.pt.v1, this.pt.v2);
+        this.geodesic = new Geodesic(this.pt, this.circle);
+        this.vel.mult(0.7);
+    }
+
+}
+
+
 class Point {
-    constructor( x, y , v1, v2) {
+    constructor( x, y, v1, v2) {
         this.x = x;
         this.y = y;
+        this.v1 = v1;
+        this.v2 = v2;
         if(!v1 && !v2){ //no normalisation, when no direction given
             this.dir = new Direction(this.x,this.y,0,0);
         }

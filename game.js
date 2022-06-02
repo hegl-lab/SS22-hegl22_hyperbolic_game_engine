@@ -8,13 +8,15 @@ var score = 0;
 var level = 1;
 
 
-let circle0, m, geodesic;
+let circle0, m, point1, geodesic, pointM;
 
 function setup() {
     createCanvas( w, h );
     circle0 = new Circle(0,0,250);
     m = new Point(0,0);
-    geodesic = new Geodesic(10,-1, 10, 0, circle0); //für Mittelpunkt von Kreis funktioniert es noch nicht
+    pointM = new PointWithMovingGeodesic(10,-100,10,4,circle0);
+    //point1 = new Point(10,-100,10,4);
+    //geodesic = new Geodesic(point1, circle0); //für Mittelpunkt von Kreis funktioniert es noch nicht
     /*ship = new Ship(w/2,h/2, 10);
     for (let i = 0; i < 5; i++) {       
         asteroids.push(new Asteroid());
@@ -28,7 +30,11 @@ function draw() {
 
     circle0.show();
     m.show();
-    geodesic.show();
+    pointM.show();
+    pointM.move();
+    //point1.show();
+    //geodesic.show();
+    //point1.move(x,y);
 
 
     
@@ -62,17 +68,28 @@ function draw() {
 
 function keyPressed(){
     if(keyCode == RIGHT_ARROW){
-        ship.setRotation(0.1);
+        pointM.setBoostingState(true);
+        pointM.boost(1,0);
+        //ship.setRotation(0.1);
     } else if (keyCode == LEFT_ARROW){
-        ship.setRotation(-0.1);
+        pointM.setBoostingState(true);
+        pointM.boost(-1,0);
+        //ship.setRotation(-0.1);
     } else if (keyCode == UP_ARROW){
-        ship.setBoostingState(true);
+        pointM.setBoostingState(true);
+        pointM.boost(0,-1);
+        //ship.setBoostingState(true);
+    } else if (keyCode == DOWN_ARROW){
+        pointM.setBoostingState(true);
+        pointM.boost(0,1);
+        //ship.setBoostingState(true);
     } else if (key == ' '){
-        lasers.push(new Laser(ship.pos, ship.heading));
+        //lasers.push(new Laser(ship.pos, ship.heading));
     }
 }
 
 function keyReleased(){
-    ship.setRotation(0);
-    ship.setBoostingState(false);
+    //ship.setRotation(0);
+    //ship.setBoostingState(false);
+    pointM.setBoostingState(false);
 }
