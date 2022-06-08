@@ -6,6 +6,7 @@ class Geodesic {
         this.pt2 = this.circle.reflectPoint(this.pt1);
         if(this.pt1.x == this.circle.x && this.pt1.y == this.circle.y){ //pt1 is midpoint of circle
             this.m = new LineSegment(this.pt1.x-300*this.pt1.dir.x,this.pt1.y-300*this.pt1.dir.y, (this.pt1.x+300*this.pt1.dir.x), (this.pt1.y + 300*this.pt1.dir.y))
+ 
         }
         else {
             this.m = this.pt1.createCircleDir(this.pt2);
@@ -14,8 +15,6 @@ class Geodesic {
 
     show(){
         push();
-        //this.pt1.show();
-        //this.pt2.show();
         this.m.show();
         pop();
     }
@@ -23,8 +22,8 @@ class Geodesic {
 
 
 class PointMovingOnGeodesic {
-    constructor( x, y , v1, v2, circle, speed){
-        this.pt = new Point(x,y,v1,v2);
+    constructor( x, y , v1, v2, r, circle, speed){
+        this.pt = new Point(x,y,v1,v2,r);
         this.circle = circle;
         this.geodesic = new Geodesic(this.pt, circle); //radius, x,y coordinate of midpoint
         this.alpha = Math.acos((x-this.geodesic.m.x)/this.geodesic.m.r);
@@ -32,27 +31,30 @@ class PointMovingOnGeodesic {
     }
 
     show() {
+        
         push();
-        this.pt.show();
+        if (Math.sqrt(this.pt.x*this.pt.x + this.pt.y*this.pt.y) < this.circle.r) //only points in the poincare disc are shown
+            this.pt.show();
         //this.geodesic.show();
         pop();
     }
 
     move() {
-        this.alpha = this.alpha + 1/(this.speed*this.geodesic.m.r);
+        var del_alpha = ((this.circle.r*this.circle.r - (this.pt.x* this.pt.x+this.pt.y*this.pt.y))*0.000015)/(2*this.geodesic.m.r);
+        this.alpha = this.alpha + del_alpha;
         var newX = this.geodesic.m.r*Math.cos(this.alpha) + this.geodesic.m.x;
         var newY = this.geodesic.m.r*Math.sin(this.alpha) + this.geodesic.m.y;
         var newV1 = 0;
         var newV2 = 0;
-        this.pt = new Point(newX, newY, newV1, newV2);
+        this.pt = new Point(newX, newY, newV1, newV2, this.pt.r);
     }
 }
 
 
 
 class PointWithMovingGeodesic {
-    constructor( x, y , v1, v2, circle){
-        this.pt = new Point(x,y,v1,v2);
+    constructor( x, y , v1, v2, r, circle){
+        this.pt = new Point(x,y,v1,v2,r);
         this.circle = circle;
         this.geodesic = new Geodesic(this.pt, circle);
         this.boosting = false;
@@ -79,7 +81,7 @@ class PointWithMovingGeodesic {
     move() {
         var newX = this.pt.x + this.vel.x;
         var newY = this.pt.y + this.vel.y;
-        this.pt = new Point(newX, newY, this.pt.v1, this.pt.v2);
+        this.pt = new Point(newX, newY, this.pt.v1, this.pt.v2, this.pt.r);
         this.geodesic = new Geodesic(this.pt, this.circle);
         this.vel.mult(0.7);
     }
@@ -88,11 +90,12 @@ class PointWithMovingGeodesic {
 
 
 class Point {
-    constructor( x, y, v1, v2) {
+    constructor( x, y, v1, v2, r) {
         this.x = x;
         this.y = y;
         this.v1 = v1;
         this.v2 = v2;
+        this.r = r;
         if(!v1 && !v2){ //no normalisation, when no direction given
             this.dir = new Direction(this.x,this.y,0,0);
         }
@@ -106,7 +109,7 @@ class Point {
         push();
         stroke( 0, 0, 255 );
         fill( 0, 0, 255 );
-        circle( this.x, this.y, 5 );
+        circle( this.x, this.y, this.r);
         this.dir.show();
         pop();
     }
@@ -121,25 +124,16 @@ class Point {
             let line = new LineSegment(this.x-300*dirx,this.y-300*diry, (this.x+300*dirx), (this.y + 300*diry));
             return line;
         }
+        
         let m1 = this.x - radius*diry;
         let m2 = this.y + radius*dirx;
         
-        let eps = 0.00001
+        let eps = 0.00000001
         if (dist(m1,m2,x1,y1) - radius > eps){ //both points has to be on circle
             m1 = this.x + radius*diry;
             m2 = this.y - radius*dirx;
         }
         let c = new Circle(m1, m2, radius);
-        return c;
-    }
-
-    createCircle(pt2){ //points has to be aligned
-        let x2 = pt2.x;
-        let y2 = pt2.y;
-        let radius = dist(this.x,this.y,x2,y2);
-        let mx = this.x + (x2-this.x)/2;
-        let my = this.y + (y2-this.y)/2;
-        let c = new Circle(mx,my,radius);
         return c;
     }
 }
@@ -166,7 +160,7 @@ class Circle {
         let len2 = (this.r*this.r)/len1;
         let x1 = this.x + len2*(x0-this.x)/len1;
         let y1 = this.y + len2*(y0-this.y)/len1;
-        let pt = new Point(x1,y1);
+        let pt = new Point(x1,y1, pt0.r);
         return pt;
     }
 }
