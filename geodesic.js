@@ -28,6 +28,8 @@ class PointMovingOnGeodesic {
         this.geodesic = new Geodesic(this.pt, circle); //radius, x,y coordinate of midpoint
         this.alpha = Math.acos((x-this.geodesic.m.x)/this.geodesic.m.r);
         this.speed = speed;
+        
+        console.log(this.geodesic.m.r);
     }
 
     show() {
@@ -40,12 +42,14 @@ class PointMovingOnGeodesic {
     }
 
     move() {
-        var del_alpha = ((this.circle.r*this.circle.r - (this.pt.x* this.pt.x+this.pt.y*this.pt.y))*0.000015)/(2*this.geodesic.m.r);
+        var del_alpha = ((sq(this.circle.r) - (sq(this.pt.x)+sq(this.pt.y)))*0.000015)/(2*this.geodesic.m.r);
         this.alpha = this.alpha + del_alpha;
         var newX = this.geodesic.m.r*Math.cos(this.alpha) + this.geodesic.m.x;
         var newY = this.geodesic.m.r*Math.sin(this.alpha) + this.geodesic.m.y;
         var newV1 = 0;
         var newV2 = 0;
+        var radius = this.pt.r * Math.sqrt(sq(Math.cos(this.alpha))+sq(Math.sin(this.alpha)))*0.999;
+        //this.pt = new Point(newX, newY, newV1, newV2, radius);
         this.pt = new Point(newX, newY, newV1, newV2, this.pt.r);
     }
 }
@@ -109,9 +113,20 @@ class Point {
         push();
         stroke( 0, 0, 255 );
         fill( 0, 0, 255 );
+        //var radius = this.calculateRadius();
         circle( this.x, this.y, this.r);
         this.dir.show();
         pop();
+    }
+
+    calculateRadius(){
+        var newX = (this.x-w/2)/(w/2);
+        var newY = (this.y-w/2)/(w/2);
+        var norm = Math.sqrt(sq(newX) + sq(newY));
+        var pm = ((1+norm)*Math.exp(this.r) - (1-norm))/((1+norm)*Math.exp(this.r) + (1-norm));
+        var qm = ((1+norm) - (1-norm)*Math.exp(this.r))/((1+norm) + (1-norm)*Math.exp(this.r));
+        var phi = arg([this.x,this.y]);
+        return Math.sqrt(sq((pm-qm)*(phi)) + sq((pm-qm)*(phi)));
     }
 
     createCircleDir(pt1){ //create circle from two given points and direction
@@ -136,6 +151,14 @@ class Point {
         let c = new Circle(m1, m2, radius);
         return c;
     }
+}
+
+function arg(a) {
+    let mult = 0;
+    if(a[0] <0) {
+        mult = 1;
+    }
+    return atan(a[1]/a[0]) + mult * PI;
 }
 
 class Circle {

@@ -1,5 +1,4 @@
 var w = 1000;
-var h = 1000;
 var ship;
 var asteroids = [];
 var lasers = [];
@@ -8,15 +7,15 @@ var score = 0;
 var level = 1;
 
 
-let circle0, m, geodesic, pointM;
+let poincareDisk, m, geodesic, pointM;
 
 function setup() {
-    createCanvas( w, h );
-    circle0 = new Circle(0,0,250);
+    createCanvas( w, w );
+    poincareDisk = new Circle(0,0,250);
     m = new Point(0,0);
-    pointM = new PointWithMovingGeodesic(0,0,10,-10,5,circle0);
+    pointM = new PointWithMovingGeodesic(0,0,10,-10,5,poincareDisk);
 
-    for(let i = 0; i<20; i++){
+    for(let i = 0; i<1; i++){
         var x = random(-150,150);
         var y = random(-150,150);
         var v1 = random(-10,10);
@@ -24,11 +23,11 @@ function setup() {
         var speed = random(-10,10);
         if (speed == 0)
             speed += 1;
-        asteroids.push(new PointMovingOnGeodesic(x,y,v1,v2,5,circle0,speed));
+        asteroids.push(new PointMovingOnGeodesic(x,y,v1,v2,10,poincareDisk,speed));
     }
    
-    /*ship = new Ship(w/2,h/2, 10);
-    for (let i = 0; i < 5; i++) {       
+    ship = new Ship(0,0, 5);
+    /*for (let i = 0; i < 5; i++) {       
         asteroids.push(new Asteroid());
     }*/
 }
@@ -36,13 +35,13 @@ function setup() {
 function draw() {
     background( 240 );
 
-    translate(w/2,h/2);
+    translate(w/2,w/2);
 
-    circle0.show();
+    poincareDisk.show();
     m.show();
     pointM.show();
     pointM.move();
-    for(let i=0; i<20; i++){
+    for(let i=0; i<1; i++){
         asteroids[i].show();
         asteroids[i].move();
     }
@@ -66,11 +65,11 @@ function draw() {
             }
         }
     }
-
-    ship.show();
-    ship.turn();
-    ship.move();
-    ship.edge();*/
+*/
+    //ship.show();
+    //ship.turn();
+    //ship.move();
+    //ship.edge();
 
 }
 

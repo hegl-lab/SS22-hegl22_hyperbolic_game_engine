@@ -1,8 +1,11 @@
+//geodesic berechnen aus den x & y coordinate und heading
+
+
 class Ship{
     constructor(x,y,r){
         this.pos = createVector(x,y)
         this.radius = r;
-        this.heading = PI/2;
+        this.heading = PI/2; //richtung evtl. als vector, wie in points
         this.rotation = 0;
         this.boosting = false;
         this.vel = createVector(0,0);
@@ -23,7 +26,7 @@ class Ship{
     }
 
     turn() {
-        this.heading +=this.rotation;
+        this.heading +=this.rotation;//hier geodesic neu berechnen
     }
 
     setBoostingState(b) {
@@ -36,7 +39,7 @@ class Ship{
         this.vel.add(force);
     }
 
-    move() {
+    move() { //along the calculated geodesic
         if(this.boosting){
             this.boost();
         }
