@@ -26,7 +26,7 @@ function setup() {
         asteroids.push(new PointMovingOnGeodesic(x,y,v1,v2,10,poincareDisk,speed));
     }
    
-    ship = new Ship(0,0, 5);
+    ship = new Ship(0,10,5);
     /*for (let i = 0; i < 5; i++) {       
         asteroids.push(new Asteroid());
     }*/
@@ -39,17 +39,16 @@ function draw() {
 
     poincareDisk.show();
     m.show();
-    pointM.show();
-    pointM.move();
-    for(let i=0; i<1; i++){
+    //pointM.show();
+    //pointM.move();
+    /*for(let i=0; i<1; i++){
         asteroids[i].show();
         asteroids[i].move();
-    }
+    }*/
 
     /*for(var i=0; i<asteroids.length;i++){
         asteroids[i].render();
         asteroids[i].move();
-        asteroids[i].edge();
     }
 
     for(var i=lasers.length-1; i>=0; i--){
@@ -66,8 +65,8 @@ function draw() {
         }
     }
 */
-    //ship.show();
-    //ship.turn();
+    ship.show();
+    ship.turn();
     //ship.move();
     //ship.edge();
 
@@ -76,13 +75,13 @@ function draw() {
 
 function keyPressed(){
     if(keyCode == RIGHT_ARROW){
-        pointM.setBoostingState(true);
-        pointM.boost(1,0);
-        //ship.setRotation(0.1);
+        //pointM.setBoostingState(true);
+        //pointM.boost(1,0);
+        ship.setRotation(0.1);
     } else if (keyCode == LEFT_ARROW){
-        pointM.setBoostingState(true);
-        pointM.boost(-1,0);
-        //ship.setRotation(-0.1);
+        //pointM.setBoostingState(true);
+        //pointM.boost(-1,0);
+        ship.setRotation(-0.1);
     } else if (keyCode == UP_ARROW){
         pointM.setBoostingState(true);
         pointM.boost(0,-1);
@@ -97,7 +96,7 @@ function keyPressed(){
 }
 
 function keyReleased(){
-    //ship.setRotation(0);
+    ship.setRotation(0);
     //ship.setBoostingState(false);
     pointM.setBoostingState(false);
 }
