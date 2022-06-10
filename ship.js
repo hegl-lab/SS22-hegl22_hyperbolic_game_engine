@@ -1,18 +1,16 @@
-//geodesic berechnen aus den x & y coordinate und heading
-
-
 class Ship{
     constructor(x,y,r){
-        this.pos = createVector(x,y)
-        this.radius = r;
-        this.heading = createVector(1,1);
+        this.pos = createVector(x,y) //position of the triangle
+        this.radius = r; //size of the triangle
+        this.heading = createVector(1,1); //direction as a vector
         this.normHeading();
-        this.rotation = Math.acos(this.heading.x/sqrt(sq(this.heading.x)+sq(this.heading.y)));
+        this.rotation = Math.acos(this.heading.x/sqrt(sq(this.heading.x)+sq(this.heading.y))); //direction as an angle
         this.rot = 0;
+        this.invPos = this.inversePosition(); //inverse point needed to construct geodesic
+        this.geodesic = this.constructGeodesic(); //geodesic based on location and direction
+        this.alpha = 0; //save angle of location on geodesic (circle)
         this.boosting = false;
         this.vel = createVector(0,0);
-        this.invPos = this.inversePosition();
-        this.geodesic = this.constructGeodesic();
     }
 
     show() { // show the spaceship as a red triangle
@@ -34,10 +32,10 @@ class Ship{
     }
 
     turn() {
-        this.rotation +=this.rot;//hier geodesic neu berechnen
+        this.rotation +=this.rot; //set new rotation and heading
         this.heading = createVector(1,Math.tan(this.rotation));
         this.normHeading();
-        this.geodesic = this.constructGeodesic();
+        this.geodesic = this.constructGeodesic(); //calculate new geodesic
     }
 
 
@@ -46,7 +44,8 @@ class Ship{
         this.boosting = b;
     }
 
-    boost() {
+    boost() { //moving along geodesic includes rotation
+        //angle change of rotation is equal to angle change of position
         var force  = p5.Vector.fromAngle(this.heading);
         force.mult(0.1);
         this.vel.add(force);
