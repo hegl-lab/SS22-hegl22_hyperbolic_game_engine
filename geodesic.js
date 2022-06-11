@@ -114,7 +114,7 @@ class Point {
         stroke( 0, 0, 255 );
         fill( 0, 0, 255 );
         //var radius = this.calculateRadius();
-        circle( this.x, this.y, this.r);
+        circle(this.x, this.y, this.r);
         this.dir.show();
         pop();
     }
