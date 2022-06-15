@@ -11,11 +11,11 @@ let poincareDisk, m, geodesic, pointM;
 
 function setup() {
     createCanvas( w, w );
-    poincareDisk = new Circle(0,0,250);
+    poincareDisk = new Circle(0,0,280);
     m = new Point(0,0);
     pointM = new PointWithMovingGeodesic(0,0,10,-10,5,poincareDisk);
 
-    for(let i = 0; i<1; i++){
+    for(let i = 0; i<12; i++){
         var x = random(-150,150);
         var y = random(-150,150);
         var v1 = random(-10,10);
@@ -23,7 +23,7 @@ function setup() {
         var speed = random(-10,10);
         if (speed == 0)
             speed += 1;
-        asteroids.push(new PointMovingOnGeodesic(x,y,v1,v2,10,poincareDisk,speed));
+        asteroids.push(new PointMovingOnGeodesic(x,y,v1,v2,7,poincareDisk,speed));
     }
    
     ship = new Ship(10,20,5);
@@ -41,10 +41,10 @@ function draw() {
     m.show();
     //pointM.show();
     //pointM.move();
-    /*for(let i=0; i<1; i++){
+    for(let i=0; i<12; i++){
         asteroids[i].show();
         asteroids[i].move();
-    }*/
+    }
 
     /*for(var i=0; i<asteroids.length;i++){
         asteroids[i].render();

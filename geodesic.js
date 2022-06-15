@@ -28,8 +28,6 @@ class PointMovingOnGeodesic {
         this.geodesic = new Geodesic(this.pt, circle); //radius, x,y coordinate of midpoint
         this.alpha = Math.acos((x-this.geodesic.m.x)/this.geodesic.m.r);
         this.speed = speed;
-        
-        console.log(this.geodesic.m.r);
     }
 
     show() {
@@ -44,8 +42,20 @@ class PointMovingOnGeodesic {
     move() {
         var del_alpha = ((sq(this.circle.r) - (sq(this.pt.x)+sq(this.pt.y)))*0.000015)/(2*this.geodesic.m.r);
         this.alpha = this.alpha + del_alpha;
-        var newX = this.geodesic.m.r*Math.cos(this.alpha) + this.geodesic.m.x;
-        var newY = this.geodesic.m.r*Math.sin(this.alpha) + this.geodesic.m.y;
+        var newX, newY;
+        var newX1 = this.geodesic.m.r*Math.cos(this.alpha) + this.geodesic.m.x;
+        var newX2 = this.geodesic.m.r*Math.cos(this.alpha) - this.geodesic.m.x;
+        var newY1 = this.geodesic.m.r*Math.sin(this.alpha) + this.geodesic.m.y;
+        var newY2 = this.geodesic.m.r*Math.sin(this.alpha) - this.geodesic.m.y;
+        if (abs(this.pt.x - newX1) < abs(this.pt.x - newX2))
+                newX = newX1;
+            else
+                newX = newX2;
+
+            if(abs(this.pt.y - newY1) < abs(this.pt.y - newY2))
+                newY = newY1;
+            else
+                newY = newY2;
         var newV1 = 0;
         var newV2 = 0;
         var radius = this.pt.r * Math.sqrt(sq(Math.cos(this.alpha))+sq(Math.sin(this.alpha)))*0.999;
@@ -115,7 +125,7 @@ class Point {
         fill( 0, 0, 255 );
         //var radius = this.calculateRadius();
         circle(this.x, this.y, this.r);
-        this.dir.show();
+        //this.dir.show();
         pop();
     }
 

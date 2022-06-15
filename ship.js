@@ -35,6 +35,7 @@ class Ship{
         this.rotation +=this.rot; //set new rotation and heading
         this.heading = createVector(1,Math.tan(this.rotation));
         this.normHeading();
+        this.invPos = this.inversePosition();
         this.geodesic = this.constructGeodesic(); //calculate new geodesic
         this.alpha = this.calculateAlpha(); //calculate alpha for position on geodesic
     }
@@ -54,15 +55,19 @@ class Ship{
         }
         else {
             var del_alpha = ((sq(poincareDisk.r) - (sq(this.pos.x)+sq(this.pos.y)))*0.000015)/(2*this.geodesic.r);
-            console.log(this.heading) 
-            if(this.heading.x < 0){
+            /*if(this.heading.x < 0){
                 this.alpha = this.alpha + del_alpha;
                 this.rotation -= del_alpha;
             }
             else{
                 this.alpha = this.alpha - del_alpha;
                 this.rotation += del_alpha;
-            }
+            }*/
+            // BEWEGUNG IN DIE RICHTIGE RICHTUNG FUNKTIONIERT NOCH NICHT
+            // ROTATION ZUM TEIL NICHT RICHTIG, WESHALB GEODESIC NEU BERECHNET WIRD
+            // bei Sprungstelle ist Geodesic noch nicht ganz richtig
+            this.alpha = this.alpha - del_alpha; 
+            this.rotation += del_alpha;
             var newX1 = this.geodesic.x + this.geodesic.r*Math.cos(this.alpha);
             var newX2 = this.geodesic.x - this.geodesic.r*Math.cos(this.alpha);
             var newY1 = this.geodesic.y + this.geodesic.r*Math.sin(this.alpha);
