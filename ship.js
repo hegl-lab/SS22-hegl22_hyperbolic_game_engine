@@ -1,18 +1,16 @@
-//geodesic berechnen aus den x & y coordinate und heading
-
-
 class Ship{
     constructor(x,y,r){
-        this.pos = createVector(x,y)
-        this.radius = r;
-        this.heading = createVector(1,1);
+        this.pos = createVector(x,y) //position of the triangle
+        this.radius = r; //size of the triangle
+        this.heading = createVector(1,1); //direction as a vector
         this.normHeading();
-        this.rotation = Math.acos(this.heading.x/sqrt(sq(this.heading.x)+sq(this.heading.y)));
+        this.rotation = Math.acos(this.heading.x/sqrt(sq(this.heading.x)+sq(this.heading.y))); //direction as an angle
         this.rot = 0;
+        this.invPos = this.inversePosition(); //inverse point needed to construct geodesic
+        this.geodesic = this.constructGeodesic(); //geodesic based on location and direction
+        this.alpha = this.calculateAlpha();
         this.boosting = false;
         this.vel = createVector(0,0);
-        this.invPos = this.inversePosition();
-        this.geodesic = this.constructGeodesic();
     }
 
     show() { // show the spaceship as a red triangle
@@ -34,32 +32,68 @@ class Ship{
     }
 
     turn() {
-        this.rotation +=this.rot;//hier geodesic neu berechnen
-        this.heading = createVector(1,Math.tan(this.rotation));
-        this.normHeading();
-        this.geodesic = this.constructGeodesic();
+        if(this.rot != 0){
+            this.rotation +=this.rot; //set new rotation and heading
+            if(this.rotation > PI)
+                this.rotation -= 2*PI;
+            else if(this.rotation < -PI)
+                this.rotation += 2*PI;
+            this.heading = createVector(1,Math.tan(this.rotation));
+            this.normHeading();
+            this.invPos = this.inversePosition();
+            this.geodesic = this.constructGeodesic(); //calculate new geodesic
+            this.alpha = this.calculateAlpha(); //calculate alpha for position on geodesic
+        }
     }
 
 
-    // MOVEMENT HAS TO BE CHANGED!!! --> during movement, rotation is also needed
     setBoostingState(b) {
         this.boosting = b;
     }
 
-    boost() {
-        var force  = p5.Vector.fromAngle(this.heading);
-        force.mult(0.1);
-        this.vel.add(force);
+    boost() { 
+        //moving along geodesic includes rotation
+        //angle change of rotation is equal to angle change of position
+        if (this.geodesic.constructor.name == "LineSegment"){
+            var force  = p5.Vector.fromAngle(this.heading);
+            force.mult(0.001);
+            this.pos.add(force);
+        }
+        else {
+            var del_alpha = ((sq(poincareDisk.r) - (sq(this.pos.x)+sq(this.pos.y)))*0.000015)/(2*this.geodesic.r);
+            // BEWEGUNG IN DIE RICHTIGE RICHTUNG FUNKTIONIERT NOCH NICHT
+            // ROTATION ZUM TEIL NICHT RICHTIG
+            // bei Sprungstelle ist Geodesic noch nicht ganz richtig
+            console.log(this.geodesic.r);
+            this.alpha = this.alpha - del_alpha; 
+            this.rotation += del_alpha;
+            var newX1 = this.geodesic.x + this.geodesic.r*Math.cos(this.alpha);
+            var newX2 = this.geodesic.x - this.geodesic.r*Math.cos(this.alpha);
+            var newY1 = this.geodesic.y + this.geodesic.r*Math.sin(this.alpha);
+            var newY2 = this.geodesic.y - this.geodesic.r*Math.sin(this.alpha);
+            var newX,newY;
+            if (abs(this.pos.x - newX1) < abs(this.pos.x - newX2))
+                newX = newX1;
+            else
+                newX = newX2;
+
+            if(abs(this.pos.y - newY1) < abs(this.pos.y - newY2))
+                newY = newY1;
+            else
+                newY = newY2;
+            //var radius = this.pt.r * Math.sqrt(sq(Math.cos(this.alpha))+sq(Math.sin(this.alpha)))*0.999;
+            this.pos = createVector(newX,newY);
+            this.heading = createVector(1,Math.tan(this.rotation));
+        }
     }
 
-    move() { //along the calculated geodesic
+    move() { 
+        //along the calculated geodesic
         if(this.boosting){
             this.boost();
         }
-        this.pos.add(this.vel);
-        this.vel.mult(0.97);
+        
     }
-    ///
 
     inversePosition(){
         let x0 = this.pos.x;
@@ -101,5 +135,14 @@ class Ship{
             this.heading.x = this.heading.x/norm;
             this.heading.y = this.heading.y/norm;
         } 
+    }
+
+    calculateAlpha(){
+        if (this.geodesic.constructor.name == "Circle"){
+            return Math.acos((this.pos.x-this.geodesic.x)/this.geodesic.r); //save angle of location on geodesic (circle)
+        }
+        else if (this.geodesic.constructor.name == "LineSegment"){
+            return -1;
+        }
     }
 }
