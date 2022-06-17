@@ -2,13 +2,13 @@ class Ship{
     constructor(x,y,r){
         this.pos = createVector(x,y) //position of the triangle
         this.radius = r; //size of the triangle
-        this.heading = createVector(1,1); //direction as a vector
+        this.heading = createVector(1,1); //direction as a vector, needed to construct geodesic
         this.normHeading();
         this.rotation = Math.acos(this.heading.x/sqrt(sq(this.heading.x)+sq(this.heading.y))); //direction as an angle
         this.rot = 0;
         this.invPos = this.inversePosition(); //inverse point needed to construct geodesic
         this.geodesic = this.constructGeodesic(); //geodesic based on location and direction
-        this.alpha = this.calculateAlpha();
+        this.alpha = this.calculateAlpha(); //calculate angle for position on geodesic
         this.boosting = false;
         this.vel = createVector(0,0);
     }
@@ -32,7 +32,7 @@ class Ship{
     }
 
     turn() {
-        if(this.rot != 0){
+        if(this.rot != 0){ //only when key is pressed, rotation and geodesic are updated
             this.rotation +=this.rot; //set new rotation and heading
             if(this.rotation > PI)
                 this.rotation -= 2*PI;
@@ -40,7 +40,7 @@ class Ship{
                 this.rotation += 2*PI;
             this.heading = createVector(1,Math.tan(this.rotation));
             this.normHeading();
-            this.invPos = this.inversePosition();
+            this.invPos = this.inversePosition(); //calculate inverse point
             this.geodesic = this.constructGeodesic(); //calculate new geodesic
             this.alpha = this.calculateAlpha(); //calculate alpha for position on geodesic
         }
@@ -52,14 +52,14 @@ class Ship{
     }
 
     boost() { 
-        //moving along geodesic includes rotation
-        //angle change of rotation is equal to angle change of position
-        if (this.geodesic.constructor.name == "LineSegment"){
+        if (this.geodesic.constructor.name == "LineSegment"){ //geodesic ist diameter of poincare disc
             var force  = p5.Vector.fromAngle(this.heading);
-            force.mult(0.001);
+            force.mult(0.001); //TO-DO: speed needs to be changed based on position
             this.pos.add(force);
         }
         else {
+            //moving along geodesic includes rotation
+            //angle change of rotation is equal to angle change of position
             var del_alpha = ((sq(poincareDisk.r) - (sq(this.pos.x)+sq(this.pos.y)))*0.000015)/(2*this.geodesic.r);
             // BEWEGUNG IN DIE RICHTIGE RICHTUNG FUNKTIONIERT NOCH NICHT
             // ROTATION ZUM TEIL NICHT RICHTIG
@@ -82,20 +82,19 @@ class Ship{
             else
                 newY = newY2;
             //var radius = this.pt.r * Math.sqrt(sq(Math.cos(this.alpha))+sq(Math.sin(this.alpha)))*0.999;
-            this.pos = createVector(newX,newY);
-            this.heading = createVector(1,Math.tan(this.rotation));
+            this.pos = createVector(newX,newY); //set new position
+            this.heading = createVector(1,Math.tan(this.rotation)); //set new heading
         }
     }
 
     move() { 
-        //along the calculated geodesic
+        //move along the calculated geodesic
         if(this.boosting){
             this.boost();
         }
-        
     }
 
-    inversePosition(){
+    inversePosition(){ //calculate inverse position 
         let x0 = this.pos.x;
         let y0 = this.pos.y;
         let circle_x = poincareDisk.x;
@@ -107,7 +106,7 @@ class Ship{
         return createVector(x1,y1);
     }
 
-    constructGeodesic(){
+    constructGeodesic(){ //calculate geodesic based on position and direction
         let dirx = this.heading.x;
         let diry = this.heading.y;
         if(this.pos.x == poincareDisk.x && this.pos.y == poincareDisk.y)   // ship is at the midpoint --> no existing inverse point 
