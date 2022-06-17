@@ -26,7 +26,7 @@ function setup() {
         asteroids.push(new PointMovingOnGeodesic(x,y,v1,v2,7,poincareDisk,speed));
     }
    
-    ship = new Ship(10,20,5);
+    ship = new Ship(-50,40,5);
     /*for (let i = 0; i < 5; i++) {       
         asteroids.push(new Asteroid());
     }*/

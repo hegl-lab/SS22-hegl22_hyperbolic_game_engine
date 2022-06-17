@@ -32,21 +32,27 @@ class Ship{
     }
 
     turn() {
-        this.rotation +=this.rot; //set new rotation and heading
-        this.heading = createVector(1,Math.tan(this.rotation));
-        this.normHeading();
-        this.invPos = this.inversePosition();
-        this.geodesic = this.constructGeodesic(); //calculate new geodesic
-        this.alpha = this.calculateAlpha(); //calculate alpha for position on geodesic
+        if(this.rot != 0){
+            this.rotation +=this.rot; //set new rotation and heading
+            if(this.rotation > PI)
+                this.rotation -= 2*PI;
+            else if(this.rotation < -PI)
+                this.rotation += 2*PI;
+            this.heading = createVector(1,Math.tan(this.rotation));
+            this.normHeading();
+            this.invPos = this.inversePosition();
+            this.geodesic = this.constructGeodesic(); //calculate new geodesic
+            this.alpha = this.calculateAlpha(); //calculate alpha for position on geodesic
+        }
     }
 
 
-    // MOVEMENT HAS TO BE CHANGED!!! --> during movement, rotation is also needed
     setBoostingState(b) {
         this.boosting = b;
     }
 
-    boost() { //moving along geodesic includes rotation
+    boost() { 
+        //moving along geodesic includes rotation
         //angle change of rotation is equal to angle change of position
         if (this.geodesic.constructor.name == "LineSegment"){
             var force  = p5.Vector.fromAngle(this.heading);
@@ -55,17 +61,10 @@ class Ship{
         }
         else {
             var del_alpha = ((sq(poincareDisk.r) - (sq(this.pos.x)+sq(this.pos.y)))*0.000015)/(2*this.geodesic.r);
-            /*if(this.heading.x < 0){
-                this.alpha = this.alpha + del_alpha;
-                this.rotation -= del_alpha;
-            }
-            else{
-                this.alpha = this.alpha - del_alpha;
-                this.rotation += del_alpha;
-            }*/
             // BEWEGUNG IN DIE RICHTIGE RICHTUNG FUNKTIONIERT NOCH NICHT
-            // ROTATION ZUM TEIL NICHT RICHTIG, WESHALB GEODESIC NEU BERECHNET WIRD
+            // ROTATION ZUM TEIL NICHT RICHTIG
             // bei Sprungstelle ist Geodesic noch nicht ganz richtig
+            console.log(this.geodesic.r);
             this.alpha = this.alpha - del_alpha; 
             this.rotation += del_alpha;
             var newX1 = this.geodesic.x + this.geodesic.r*Math.cos(this.alpha);
@@ -88,15 +87,13 @@ class Ship{
         }
     }
 
-    move() { //along the calculated geodesic
+    move() { 
+        //along the calculated geodesic
         if(this.boosting){
             this.boost();
         }
-        //this.pos.add(this.vel);
-        //this.vel.mult(0.97);
         
     }
-    ///
 
     inversePosition(){
         let x0 = this.pos.x;
