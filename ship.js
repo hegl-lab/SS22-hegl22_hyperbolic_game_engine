@@ -4,7 +4,6 @@ class Ship{
         this.radius = r; //size of the triangle
         this.heading = createVector(1,1); //direction as a vector, needed to construct geodesic
         this.normHeading();
-        this.rotation = Math.acos(this.heading.x/sqrt(sq(this.heading.x)+sq(this.heading.y))); //direction as an angle
         this.rot = 0;
         this.invPos = this.inversePosition(); //inverse point needed to construct geodesic
         this.geodesic = this.constructGeodesic(); //geodesic based on location and direction
@@ -18,7 +17,7 @@ class Ship{
         stroke(255,0,0);
         fill(255,0,0);
         translate(this.pos.x, this.pos.y);
-        rotate(this.rotation + PI/2);
+        rotate(Math.atan2(this.heading.y, this.heading.x) + PI/2);
         triangle(-this.radius,this.radius,this.radius,this.radius,0,-this.radius*3/2);
         pop();
         push(); // show the calculated geodesic
@@ -33,12 +32,9 @@ class Ship{
 
     turn() {
         if(this.rot != 0){ //only when key is pressed, rotation and geodesic are updated
-            this.rotation +=this.rot; //set new rotation and heading
-            if(this.rotation > PI)
-                this.rotation -= 2*PI;
-            else if(this.rotation < -PI)
-                this.rotation += 2*PI;
-            this.heading = createVector(Math.cos(this.rotation), Math.sin(this.rotation));
+            var theta = Math.atan2(this.heading.y, this.heading.x);
+            theta += this.rot; //set new rotation and heading
+            this.heading = createVector(Math.cos(theta), Math.sin(theta));
             this.normHeading();
             this.invPos = this.inversePosition(); //calculate inverse point
             this.geodesic = this.constructGeodesic(); //calculate new geodesic
@@ -62,19 +58,20 @@ class Ship{
             //angle change of rotation is equal to angle change of position
             var lin_speed = 0.000015;
             var del_alpha = lin_speed * (sq(poincareDisk.r) - (sq(this.pos.x)+sq(this.pos.y)))/(2*this.geodesic.r);
-            //compute +ve dir of alpha with cross prod of heading & pos vector wrt center of geodesic
+            //compute +ve dir of alpha with cross prod of heading & pos vector wrt center of geodesic great circle
             var cross_prod = this.heading.x * (this.pos.y - this.geodesic.y) - this.heading.y * (this.pos.x - this.geodesic.x);
             var alpha_orient = Math.sign(cross_prod);
             // BEWEGUNG IN DIE RICHTIGE RICHTUNG FUNKTIONIERT NOCH NICHT
             // ROTATION ZUM TEIL NICHT RICHTIG
             // bei Sprungstelle ist Geodesic noch nicht ganz richtig
             this.alpha = this.alpha - alpha_orient * del_alpha;
-            this.rotation += del_alpha;
             var newX = this.geodesic.x + this.geodesic.r*Math.cos(this.alpha);
             var newY = this.geodesic.y + this.geodesic.r*Math.sin(this.alpha);
             //var radius = this.pt.r * Math.sqrt(sq(Math.cos(this.alpha))+sq(Math.sin(this.alpha)))*0.999;
-            this.pos = createVector(newX,newY); //set new position
-            this.heading = createVector(Math.cos(this.rotation),Math.sin(this.rotation)); //set new heading
+            //set new position
+            this.pos = createVector(newX,newY);
+            //set new heading
+            this.heading = createVector(alpha_orient * (this.pos.y - this.geodesic.y), -alpha_orient *(this.pos.x - this.geodesic.x));
         }
     }
 
