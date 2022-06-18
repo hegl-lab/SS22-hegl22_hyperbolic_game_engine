@@ -38,7 +38,7 @@ class Ship{
                 this.rotation -= 2*PI;
             else if(this.rotation < -PI)
                 this.rotation += 2*PI;
-            this.heading = createVector(1,Math.tan(this.rotation));
+            this.heading = createVector(Math.cos(this.rotation), Math.sin(this.rotation));
             this.normHeading();
             this.invPos = this.inversePosition(); //calculate inverse point
             this.geodesic = this.constructGeodesic(); //calculate new geodesic
@@ -60,30 +60,21 @@ class Ship{
         else {
             //moving along geodesic includes rotation
             //angle change of rotation is equal to angle change of position
-            var del_alpha = ((sq(poincareDisk.r) - (sq(this.pos.x)+sq(this.pos.y)))*0.000015)/(2*this.geodesic.r);
+            var lin_speed = 0.000015;
+            var del_alpha = lin_speed * (sq(poincareDisk.r) - (sq(this.pos.x)+sq(this.pos.y)))/(2*this.geodesic.r);
+            //compute +ve dir of alpha with cross prod of heading & pos vector wrt center of geodesic
+            var cross_prod = this.heading.x * (this.pos.y - this.geodesic.y) - this.heading.y * (this.pos.x - this.geodesic.x);
+            var alpha_orient = Math.sign(cross_prod);
             // BEWEGUNG IN DIE RICHTIGE RICHTUNG FUNKTIONIERT NOCH NICHT
             // ROTATION ZUM TEIL NICHT RICHTIG
             // bei Sprungstelle ist Geodesic noch nicht ganz richtig
-            console.log(this.geodesic.r);
-            this.alpha = this.alpha - del_alpha; 
+            this.alpha = this.alpha - alpha_orient * del_alpha;
             this.rotation += del_alpha;
-            var newX1 = this.geodesic.x + this.geodesic.r*Math.cos(this.alpha);
-            var newX2 = this.geodesic.x - this.geodesic.r*Math.cos(this.alpha);
-            var newY1 = this.geodesic.y + this.geodesic.r*Math.sin(this.alpha);
-            var newY2 = this.geodesic.y - this.geodesic.r*Math.sin(this.alpha);
-            var newX,newY;
-            if (abs(this.pos.x - newX1) < abs(this.pos.x - newX2))
-                newX = newX1;
-            else
-                newX = newX2;
-
-            if(abs(this.pos.y - newY1) < abs(this.pos.y - newY2))
-                newY = newY1;
-            else
-                newY = newY2;
+            var newX = this.geodesic.x + this.geodesic.r*Math.cos(this.alpha);
+            var newY = this.geodesic.y + this.geodesic.r*Math.sin(this.alpha);
             //var radius = this.pt.r * Math.sqrt(sq(Math.cos(this.alpha))+sq(Math.sin(this.alpha)))*0.999;
             this.pos = createVector(newX,newY); //set new position
-            this.heading = createVector(1,Math.tan(this.rotation)); //set new heading
+            this.heading = createVector(Math.cos(this.rotation),Math.sin(this.rotation)); //set new heading
         }
     }
 
@@ -138,7 +129,7 @@ class Ship{
 
     calculateAlpha(){
         if (this.geodesic.constructor.name == "Circle"){
-            return Math.acos((this.pos.x-this.geodesic.x)/this.geodesic.r); //save angle of location on geodesic (circle)
+            return Math.atan2(this.pos.y - this.geodesic.y, this.pos.x - this.geodesic.x); //save angle of location on geodesic (circle)
         }
         else if (this.geodesic.constructor.name == "LineSegment"){
             return -1;
