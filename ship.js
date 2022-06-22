@@ -12,17 +12,18 @@ class Ship{
         this.vel = createVector(0,0);
     }
 
-    show() { // show the spaceship as a red triangle
+    show() { 
+        push(); // show the calculated geodesic
+        this.geodesic.show();
+        pop()
+        // show the spaceship as a red triangle
         push();
         stroke(255,0,0);
         fill(255,0,0);
         translate(this.pos.x, this.pos.y);
         rotate(Math.atan2(this.heading.y, this.heading.x) + PI/2);
         triangle(-this.radius,this.radius,this.radius,this.radius,0,-this.radius*3/2);
-        pop();
-        push(); // show the calculated geodesic
-        this.geodesic.show();
-        pop();
+        pop();;
     }
 
 
@@ -56,7 +57,7 @@ class Ship{
         else {
             //moving along geodesic includes rotation
             //angle change of rotation is equal to angle change of position
-            var lin_speed = 0.000015;
+            var lin_speed = 0.000025;
             var del_alpha = lin_speed * (sq(poincareDisk.r) - (sq(this.pos.x)+sq(this.pos.y)))/(2*this.geodesic.r);
             //compute +ve dir of alpha with cross prod of heading & pos vector wrt center of geodesic great circle
             var cross_prod = this.heading.x * (this.pos.y - this.geodesic.y) - this.heading.y * (this.pos.x - this.geodesic.x);

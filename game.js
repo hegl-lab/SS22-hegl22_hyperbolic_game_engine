@@ -7,13 +7,12 @@ var score = 0;
 var level = 1;
 
 
-let poincareDisk, m, geodesic, pointM;
+let poincareDisk, m, geodesic;
 
 function setup() {
     createCanvas( w, w );
     poincareDisk = new Circle(0,0,280);
     m = new Point(0,0);
-    pointM = new PointWithMovingGeodesic(0,0,10,-10,5,poincareDisk);
 
     for(let i = 0; i<12; i++){
         var x = random(-150,150);
@@ -39,8 +38,6 @@ function draw() {
 
     poincareDisk.show();
     m.show();
-    //pointM.show();
-    //pointM.move();
     for(let i=0; i<12; i++){
         asteroids[i].show();
         asteroids[i].move();
@@ -75,20 +72,12 @@ function draw() {
 
 function keyPressed(){
     if(keyCode == RIGHT_ARROW){
-        //pointM.setBoostingState(true);
-        //pointM.boost(1,0);
         ship.setRotation(0.1);
     } else if (keyCode == LEFT_ARROW){
-        //pointM.setBoostingState(true);
-        //pointM.boost(-1,0);
         ship.setRotation(-0.1);
     } else if (keyCode == UP_ARROW){
-        pointM.setBoostingState(true);
-        pointM.boost(0,-1);
         ship.setBoostingState(true);
     } else if (keyCode == DOWN_ARROW){
-        pointM.setBoostingState(true);
-        pointM.boost(0,1);
         //ship.setBoostingState(true);
     } else if (key == ' '){
         //lasers.push(new Laser(ship.pos, ship.heading));
@@ -98,5 +87,4 @@ function keyPressed(){
 function keyReleased(){
     ship.setRotation(0);
     ship.setBoostingState(false);
-    pointM.setBoostingState(false);
 }
