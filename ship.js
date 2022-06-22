@@ -61,16 +61,23 @@ class Ship{
             var del_alpha = lin_speed * (sq(poincareDisk.r) - (sq(this.pos.x)+sq(this.pos.y)))/(2*this.geodesic.r);
             //compute +ve dir of alpha with cross prod of heading & pos vector wrt center of geodesic great circle
             var cross_prod = this.heading.x * (this.pos.y - this.geodesic.y) - this.heading.y * (this.pos.x - this.geodesic.x);
-            var alpha_orient = Math.sign(cross_prod);
-            // BEWEGUNG IN DIE RICHTIGE RICHTUNG FUNKTIONIERT NOCH NICHT
-            // ROTATION ZUM TEIL NICHT RICHTIG
+            var alpha_orient = Math.sign(cross_prod); //use sign for orientation
             // bei Sprungstelle ist Geodesic noch nicht ganz richtig
             this.alpha = this.alpha - alpha_orient * del_alpha;
             var newX = this.geodesic.x + this.geodesic.r*Math.cos(this.alpha);
             var newY = this.geodesic.y + this.geodesic.r*Math.sin(this.alpha);
-            //var radius = this.pt.r * Math.sqrt(sq(Math.cos(this.alpha))+sq(Math.sin(this.alpha)))*0.999;
+
+            var dist1 = sqrt(sq(this.pos.x)+sq(this.pos.y));
             //set new position
             this.pos = createVector(newX,newY);
+
+            var dist2 = sqrt(sq(this.pos.x)+sq(this.pos.y));
+            //calculate radius change
+            var del_radius = 0.00000015*(sq(poincareDisk.r) - (sq(this.pos.x)+sq(this.pos.y)));
+            if (dist1<dist2)
+                this.radius = this.radius - del_radius;
+            else
+                this.radius = this.radius + del_radius;
             //set new heading
             this.heading = createVector(alpha_orient * (this.pos.y - this.geodesic.y), -alpha_orient *(this.pos.x - this.geodesic.x));
         }

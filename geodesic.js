@@ -58,48 +58,19 @@ class PointMovingOnGeodesic {
                 newY = newY2;
         var newV1 = 0;
         var newV2 = 0;
-        var radius = this.pt.r * Math.sqrt(sq(Math.cos(this.alpha))+sq(Math.sin(this.alpha)))*0.999;
+        
+        //calculate new radius
+        var dist1 = sqrt(sq(this.pt.x)+sq(this.pt.y));
+        var dist2 = sqrt(sq(newX)+sq(newY));
+        var del_radius = 0.00000015*(sq(poincareDisk.r) - (sq(newX)+sq(newY)));
+        if (dist1<dist2)
+            this.pt.r = this.pt.r - del_radius;
+        else
+            this.pt.r = this.pt.r + del_radius;
+        //var radius = this.pt.r * Math.sqrt(sq(Math.cos(this.alpha))+sq(Math.sin(this.alpha)))*0.999;
         //this.pt = new Point(newX, newY, newV1, newV2, radius);
         this.pt = new Point(newX, newY, newV1, newV2, this.pt.r);
     }
-}
-
-
-
-class PointWithMovingGeodesic {
-    constructor( x, y , v1, v2, r, circle){
-        this.pt = new Point(x,y,v1,v2,r);
-        this.circle = circle;
-        this.geodesic = new Geodesic(this.pt, circle);
-        this.boosting = false;
-        this.vel = createVector(0,0);
-    }
-
-    show() {
-        push();
-        this.pt.show();
-        this.geodesic.show();
-        pop();
-    }
-
-    setBoostingState(b) {
-        this.boosting = b;
-    }
-
-    boost(x,y) {
-        var force  = createVector(x,y);
-        //force.mult(0.1);
-        this.vel.add(force);
-    }
-
-    move() {
-        var newX = this.pt.x + this.vel.x;
-        var newY = this.pt.y + this.vel.y;
-        this.pt = new Point(newX, newY, this.pt.v1, this.pt.v2, this.pt.r);
-        this.geodesic = new Geodesic(this.pt, this.circle);
-        this.vel.mult(0.7);
-    }
-
 }
 
 
@@ -129,15 +100,6 @@ class Point {
         pop();
     }
 
-    calculateRadius(){
-        var newX = (this.x-w/2)/(w/2);
-        var newY = (this.y-w/2)/(w/2);
-        var norm = Math.sqrt(sq(newX) + sq(newY));
-        var pm = ((1+norm)*Math.exp(this.r) - (1-norm))/((1+norm)*Math.exp(this.r) + (1-norm));
-        var qm = ((1+norm) - (1-norm)*Math.exp(this.r))/((1+norm) + (1-norm)*Math.exp(this.r));
-        var phi = arg([this.x,this.y]);
-        return Math.sqrt(sq((pm-qm)*(phi)) + sq((pm-qm)*(phi)));
-    }
 
     createCircleDir(pt1){ //create circle from two given points and direction
         let dirx = this.dir.x;
@@ -163,13 +125,6 @@ class Point {
     }
 }
 
-function arg(a) {
-    let mult = 0;
-    if(a[0] <0) {
-        mult = 1;
-    }
-    return atan(a[1]/a[0]) + mult * PI;
-}
 
 class Circle {
     constructor(x,y,r){
