@@ -1,4 +1,4 @@
-var w = 1000;
+var w = 600;
 var ship;
 var asteroids = [];
 var lasers = [];
@@ -11,10 +11,10 @@ let poincareDisk, m, geodesic;
 
 function setup() {
     createCanvas( w, w );
-    poincareDisk = new Circle(0,0,280);
+    poincareDisk = new Circle(0,0,300);
     m = new Point(0,0);
 
-    for(let i = 0; i<12; i++){
+    for(let i = 0; i<1; i++){
         var x = random(-150,150);
         var y = random(-150,150);
         var v1 = random(-10,10);
@@ -38,9 +38,9 @@ function draw() {
 
     poincareDisk.show();
     m.show();
-    for(let i=0; i<12; i++){
+    for(let i=0; i<asteroids.length; i++){
         asteroids[i].show();
-        asteroids[i].move();
+        //asteroids[i].move();
     }
 
     /*for(var i=0; i<asteroids.length;i++){
@@ -65,8 +65,13 @@ function draw() {
     ship.show();
     ship.turn();
     ship.move();
-    //ship.edge();
 
+    for(let i=0; i<asteroids.length; i++){
+        var point1 = asteroids[i].pt;
+        var collide = collisionDetection(point1.x,point1.y,point1.r, ship.pos.x, ship.pos.y, ship.radius);
+        if (collide == true)
+            console.log('collision')
+    }
 }
 
 
@@ -87,4 +92,31 @@ function keyPressed(){
 function keyReleased(){
     ship.setRotation(0);
     ship.setBoostingState(false);
+}
+
+
+
+function hyperbolicDistance(x1,y1,x2,y2){ //p1 = (x1,y1); p2 = (x2,y2)
+    var delta = 2*sq(poincareDisk.r)*((sq(x1-x2)+sq(y1-y2))/((sq(poincareDisk.r)-(sq(x1)+sq(y1)))*(sq(poincareDisk.r)-(sq(x2)+sq(y2)))))
+    var distance = Math.acosh(1+delta);
+    return distance;
+}
+
+
+function collisionDetection(x1,y1,r1,x2,y2,r2){ //p1 = (x1,y1) with radius r1; p2 = (x2,y2) with radius r2
+    var distancePoints = hyperbolicDistance(x1,y1,x2,y2);
+    var r1x = x1+r1;
+    var r2x = x2+r2;
+
+    var hyperbolicRadius1 = hyperbolicDistance(x1,y1,r1x,y1);
+    var hyperbolicRadius2 = hyperbolicDistance(x1,y2,r2x,y2);
+    //PROBLEM: Visual difference between radius in hyperbolic space and on canvas for drawing of circle
+    //change view of circles,... to the actual size in hyperbolic space
+    console.log(distancePoints);
+    console.log(hyperbolicRadius1);
+    console.log(hyperbolicRadius2);
+    if (distancePoints < (hyperbolicRadius1 + hyperbolicRadius2))
+        return true
+    else  
+        return false
 }
