@@ -22,27 +22,13 @@ function setup() {
         var speed = random(-10,10);
         if (speed == 0)
             speed += 1;
-        asteroids.push(new PointMovingOnGeodesic(x,y,v1,v2,0.03,poincareDisk,speed));
-        /*asteroids.push(new PointMovingOnGeodesic(0,0.2,v1,v2,0.03,poincareDisk,speed));
-        asteroids.push(new PointMovingOnGeodesic(0,0.4,v1,v2,0.03,poincareDisk,speed));
-        asteroids.push(new PointMovingOnGeodesic(0,0.6,v1,v2,0.03,poincareDisk,speed));
-        asteroids.push(new PointMovingOnGeodesic(0,0.8,v1,v2,0.03,poincareDisk,speed));
-        
-        asteroids.push(new PointMovingOnGeodesic(-0.2,0,v1,v2,0.03,poincareDisk,speed));
-        asteroids.push(new PointMovingOnGeodesic(-0.4,0,v1,v2,0.03,poincareDisk,speed));
-        asteroids.push(new PointMovingOnGeodesic(-0.6,0,v1,v2,0.03,poincareDisk,speed));
-        asteroids.push(new PointMovingOnGeodesic(-0.8,0,v1,v2,0.03,poincareDisk,speed));
-
-        asteroids.push(new PointMovingOnGeodesic(0.2,0,v1,v2,0.05,poincareDisk,speed));
-        asteroids.push(new PointMovingOnGeodesic(0.4,0,v1,v2,0.05,poincareDisk,speed));
-        asteroids.push(new PointMovingOnGeodesic(0.6,0,v1,v2,0.05,poincareDisk,speed));
-        asteroids.push(new PointMovingOnGeodesic(0.8,0,v1,v2,0.05,poincareDisk,speed));*/
+        if (Math.sqrt(sq(x)+sq(y)) < 1)
+            asteroids.push(new PointMovingOnGeodesic(x,y,v1,v2,0.03,poincareDisk,speed));
+        else
+            asteroids.push(new PointMovingOnGeodesic(x,0,v1,v2,0.03,poincareDisk,speed));
     }
    
-    ship = new Ship(-50,40,5);
-    /*for (let i = 0; i < 5; i++) {       
-        asteroids.push(new Asteroid());
-    }*/
+    ship = new Ship(0,0.1,0.025);
 }
 
 function draw() {
@@ -54,15 +40,10 @@ function draw() {
     //m.show();
     for(let i=0; i<asteroids.length; i++){
         asteroids[i].show();
-        //asteroids[i].move();
-    }
-
-    /*for(var i=0; i<asteroids.length;i++){
-        asteroids[i].render();
         asteroids[i].move();
     }
 
-    for(var i=lasers.length-1; i>=0; i--){
+    /*for(var i=lasers.length-1; i>=0; i--){
         lasers[i].render();
         lasers[i].move();
         for(var j=asteroids.length-1; j>=0; j--){
@@ -91,9 +72,9 @@ function draw() {
 
 function keyPressed(){
     if(keyCode == RIGHT_ARROW){
-        ship.setRotation(0.1);
-    } else if (keyCode == LEFT_ARROW){
         ship.setRotation(-0.1);
+    } else if (keyCode == LEFT_ARROW){
+        ship.setRotation(0.1);
     } else if (keyCode == UP_ARROW){
         ship.setBoostingState(true);
     } else if (keyCode == DOWN_ARROW){
