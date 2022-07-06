@@ -14,7 +14,7 @@ class Ship{
 
     show() { 
         push(); // show the calculated geodesic
-        this.geodesic.show();
+        //this.geodesic.show();
         pop()
         // show the spaceship as a red triangle
         push();
@@ -61,14 +61,13 @@ class Ship{
         else {
             //moving along geodesic includes rotation
             //angle change of rotation is equal to angle change of position
-            var lin_speed = 0.0015;
+            var lin_speed = 0.0035;
             var del_alpha = lin_speed * (1 - (sq(this.pos.x)+sq(this.pos.y)))/(2*this.geodesic.r);
             //compute +ve dir of alpha with cross prod of heading & pos vector wrt center of geodesic great circle
             var cross_prod = this.heading.x * (this.pos.y - this.geodesic.y/(w/2)) - this.heading.y * (this.pos.x - this.geodesic.x/(w/2));
             var alpha_orient = Math.sign(cross_prod); //use sign for orientation
             // bei Sprungstelle ist Geodesic noch nicht ganz richtig
             this.alpha = this.alpha - alpha_orient * del_alpha;
-            console.log(this.alpha);
             var newX = this.geodesic.x/(w/2) + this.geodesic.r*Math.cos(this.alpha);
             var newY = this.geodesic.y/(w/2) + this.geodesic.r*Math.sin(this.alpha);
 
