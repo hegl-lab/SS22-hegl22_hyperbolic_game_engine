@@ -161,9 +161,8 @@ class Point {
             m1 = this.x + radius*diry;
             m2 = this.y - radius*dirx;
         }
-        console.log(m1,m2);
-        console.log(radius);
-        let c = new Circle(m1, m2, radius); //Kreis wird noch nicht an richtige Stelle gezeichnet...
+
+        let c = new Circle(m1*w/2, m2*w/2, radius); //multiplied with w/2 to have right position in canvas
         return c;
     }
 }
