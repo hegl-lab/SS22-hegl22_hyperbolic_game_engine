@@ -77,11 +77,11 @@ class Ship{
 
             var dist2 = sqrt(sq(this.pos.x)+sq(this.pos.y));
             //calculate radius change
-            var del_radius = 0.00000015*(sq(poincareDisk.r) - (sq(this.pos.x)+sq(this.pos.y)));
+            /*var del_radius = 0.00000015*(sq(poincareDisk.r) - (sq(this.pos.x)+sq(this.pos.y)));
             if (dist1<dist2)
                 this.radius = this.radius - del_radius;
             else
-                this.radius = this.radius + del_radius;
+                this.radius = this.radius + del_radius;*/
             //set new heading
             this.heading = createVector(alpha_orient * (this.pos.y - this.geodesic.y/(w/2)), -alpha_orient *(this.pos.x - this.geodesic.x/(w/2)));
         }

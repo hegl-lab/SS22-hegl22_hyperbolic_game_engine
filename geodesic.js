@@ -7,7 +7,6 @@ class Geodesic {
 
         if(this.pt1.x == this.circle.x && this.pt1.y == this.circle.y){ //pt1 is midpoint of circle
             this.m = new LineSegment(this.pt1.x-300*this.pt1.dir.x,this.pt1.y-300*this.pt1.dir.y, (this.pt1.x+300*this.pt1.dir.x), (this.pt1.y + 300*this.pt1.dir.y))
- 
         }
         else {
             this.m = this.pt1.createCircleDir(this.pt2);
@@ -23,8 +22,8 @@ class Geodesic {
 
 
 class PointMovingOnGeodesic {
-    constructor( x, y , v1, v2, r, circle, speed){
-        this.pt = new Point(x,y,v1,v2,r);
+    constructor( x, y , v1, v2, r, circle, speed, color){
+        this.pt = new Point(x,y,v1,v2,r,color);
         this.circle = circle;
         this.geodesic = new Geodesic(this.pt, circle); //radius, x,y coordinate of midpoint
         this.alpha = Math.acos((x-this.geodesic.m.x/(w/2))/this.geodesic.m.r);
@@ -32,20 +31,20 @@ class PointMovingOnGeodesic {
     }
 
     show() {
-        
         push();
         if (Math.sqrt(this.pt.x*this.pt.x + this.pt.y*this.pt.y) < 1){ //only points in the poincare disc are shown{
             this.pt.show();
-        }
-            
+        }  
         //this.geodesic.show();
         pop();
     }
 
-    move() {
-        var del_alpha = ((1 - (sq(this.pt.x)+sq(this.pt.y)))*0.0015)/(2*this.geodesic.m.r);
-        this.alpha = this.alpha + del_alpha;
-        //console.log(del_alpha);
+    move() { //PUNKTE VERSCHWINDEN EINFACH SO...
+        var del_alpha = ((1 - (sq(this.pt.x)+sq(this.pt.y)))*this.speed)/(2*this.geodesic.m.r);
+        //this.alpha = this.alpha + del_alpha;
+        var cross_prod = this.pt.v1 * (this.pt.y - this.geodesic.m.y/(w/2)) - this.pt.v2 * (this.pt.x - this.geodesic.m.x/(w/2));
+        var alpha_orient = Math.sign(cross_prod);
+        this.alpha = this.alpha - alpha_orient * del_alpha;
         var newX, newY;
         var newX1 = this.geodesic.m.r*Math.cos(this.alpha) + this.geodesic.m.x/(w/2);
         var newX2 = this.geodesic.m.r*Math.cos(this.alpha) - this.geodesic.m.x/(w/2);
@@ -56,25 +55,14 @@ class PointMovingOnGeodesic {
         else
             newX = newX2;
 
-        //if(abs(this.pt.y - newY1) < abs(this.pt.y - newY2))
             newY = newY1;
-        //else
-          //  newY = newY2;
 
-        var newV1 = 0;
-        var newV2 = 0;
-        
-        //calculate new radius
-        /*var dist1 = sqrt(sq(this.pt.x)+sq(this.pt.y));
-        var dist2 = sqrt(sq(newX)+sq(newY));
-        var del_radius = 0.00000015*(sq(poincareDisk.r) - (sq(newX)+sq(newY)));
-        if (dist1<dist2)
-            this.pt.r = this.pt.r - del_radius;
-        else
-            this.pt.r = this.pt.r + del_radius;*/
-        //var radius = this.pt.r * Math.sqrt(sq(Math.cos(this.alpha))+sq(Math.sin(this.alpha)))*0.999;
-        //this.pt = new Point(newX, newY, newV1, newV2, radius);
-        this.pt = new Point(newX, newY, newV1, newV2, this.pt.r);
+        //console.log(this.pt);
+        this.pt.v1 = alpha_orient * (newY - this.geodesic.m.y/(w/2));
+        this.pt.v2 = -alpha_orient *(newY - this.geodesic.m.x/(w/2));
+        this.pt.x = newX;
+        this.pt.y = newY;
+        console.log(this.pt);
     }
 }
 
@@ -120,12 +108,13 @@ function constructCanvasPosRadius(x,y,r){
 }
 
 class Point {
-    constructor( x, y, v1, v2, r) {
+    constructor( x, y, v1, v2, r, color) {
         this.x = x;
         this.y = y;
         this.v1 = v1;
         this.v2 = v2;
         this.r = r;
+        this.color = color;
         if(!v1 && !v2){ //no normalisation, when no direction given
             this.dir = new Direction(this.x,this.y,0,0);
         }
@@ -140,8 +129,8 @@ class Point {
         var b = res[0];
         var l = res[1];
         push();
-        stroke( 0, 0, 255 );
-        fill( 0, 0, 255 );
+        stroke( this.color[0], this.color[1], this.color[2] );
+        fill( this.color[0], this.color[1], this.color[2] );
         circle(b[0] * w/2, b[1] * w/2, w * l);
         pop();
     }

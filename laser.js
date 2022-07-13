@@ -1,11 +1,4 @@
 class Laser{
-    constructor(startpos, angle){
-        this.pos = createVector(startpos.x, startpos.y);
-        this.vel = p5.Vector.fromAngle(angle);
-        this.vel.mult(5);
-    }
-
-    
     render(){
         push();
         stroke(0, 255, 0);
