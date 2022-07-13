@@ -57,6 +57,11 @@ function draw() {
     for(let i=0; i<lasers.length; i++){
         lasers[i].show();
         lasers[i].move();
+        //is laser close to boundary --> remove
+        if (Math.sqrt(sq(lasers[i].pt.x)+sq(lasers[i].pt.y)) >= 1-eps){
+            lasers.splice(i,1);
+            break;
+        }
         //collision detection with asteroid
         for(let j=0; j<asteroids.length; j++){
             if(collisionDetection(lasers[i].pt.x,lasers[i].pt.y,lasers[i].pt.r, asteroids[j].pt.x, asteroids[j].pt.y, asteroids[j].pt.r)){
@@ -68,15 +73,17 @@ function draw() {
                 break;
             }
         }
-        //is laser close to boundary --> remove
-        if (Math.sqrt(sq(lasers[i].pt.x)+sq(lasers[i].pt.y)) >= 1-eps)
-            lasers.splice(i,1);
 
     }
 
     for(let i=0; i< lasers2.length; i++){
         lasers2[i].show();
         lasers2[i].move();
+        //is laser close to boundary --> remove
+        if (Math.sqrt(sq(lasers2[i].pt.x)+sq(lasers2[i].pt.y)) >= 1-eps){
+            lasers2.splice(i,1);
+            break;
+        }
     }
     
 

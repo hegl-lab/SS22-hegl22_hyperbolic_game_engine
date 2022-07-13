@@ -50,19 +50,16 @@ class PointMovingOnGeodesic {
         var newX2 = this.geodesic.m.r*Math.cos(this.alpha) - this.geodesic.m.x/(w/2);
         var newY1 = this.geodesic.m.r*Math.sin(this.alpha) + this.geodesic.m.y/(w/2);
         var newY2 = this.geodesic.m.r*Math.sin(this.alpha) - this.geodesic.m.y/(w/2);
-        if (abs(this.pt.x - newX1) < abs(this.pt.x - newX2))
+        //if (abs(this.pt.x - newX1) < abs(this.pt.x - newX2))
             newX = newX1;
-        else
-            newX = newX2;
+        //else
+          //  newX = newX2;
 
-            newY = newY1;
-
-        //console.log(this.pt);
+        newY = newY1;
         this.pt.v1 = alpha_orient * (newY - this.geodesic.m.y/(w/2));
         this.pt.v2 = -alpha_orient *(newY - this.geodesic.m.x/(w/2));
         this.pt.x = newX;
         this.pt.y = newY;
-        console.log(this.pt);
     }
 }
 
