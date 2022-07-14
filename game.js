@@ -105,13 +105,13 @@ function keyPressed(){
         ship.setBoostingState(true);
     } else if (key == ' '){ //create lasers
         lasers.push(new PointMovingOnGeodesic(ship.pos.x,ship.pos.y,ship.heading.x,ship.heading.y,0.025,poincareDisk,0.015, [0,255,0]));
-    } else if (keyCode == 65){
-        ship2.setRotation(-0.05);
-    } else if (keyCode == 68){
+    } else if (keyCode == 65){ // a = left
         ship2.setRotation(0.05);
-    } else if (keyCode == 87){
+    } else if (keyCode == 68){ // d = right
+        ship2.setRotation(-0.05);
+    } else if (keyCode == 87){ // w = boost
         ship2.setBoostingState(true);
-    } else if (keyCode == 83){
+    } else if (keyCode == 16){ // SHIFT = create laser
         lasers2.push(new PointMovingOnGeodesic(ship2.pos.x,ship2.pos.y,ship2.heading.x,ship2.heading.y,0.025,poincareDisk,0.015, [0,255,0]));
     } 
 }

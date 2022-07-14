@@ -26,7 +26,7 @@ class PointMovingOnGeodesic {
         this.pt = new Point(x,y,v1,v2,r,color);
         this.circle = circle;
         this.geodesic = new Geodesic(this.pt, circle); //radius, x,y coordinate of midpoint
-        this.alpha = Math.acos((x-this.geodesic.m.x/(w/2))/this.geodesic.m.r);
+        this.alpha = Math.atan2(y-this.geodesic.m.y/(w/2), x-this.geodesic.m.x/(w/2));
         this.speed = speed;
     }
 
@@ -40,24 +40,18 @@ class PointMovingOnGeodesic {
     }
 
     move() { //PUNKTE VERSCHWINDEN EINFACH SO...
-        var del_alpha = ((1 - (sq(this.pt.x)+sq(this.pt.y)))*this.speed)/(2*this.geodesic.m.r);
+        var del_alpha = this.speed * (1 - (sq(this.pt.x)+sq(this.pt.y)))/(2*this.geodesic.m.r);
         //this.alpha = this.alpha + del_alpha;
         var cross_prod = this.pt.v1 * (this.pt.y - this.geodesic.m.y/(w/2)) - this.pt.v2 * (this.pt.x - this.geodesic.m.x/(w/2));
         var alpha_orient = Math.sign(cross_prod);
         this.alpha = this.alpha - alpha_orient * del_alpha;
-        var newX, newY;
-        var newX1 = this.geodesic.m.r*Math.cos(this.alpha) + this.geodesic.m.x/(w/2);
-        var newX2 = this.geodesic.m.r*Math.cos(this.alpha) - this.geodesic.m.x/(w/2);
-        var newY1 = this.geodesic.m.r*Math.sin(this.alpha) + this.geodesic.m.y/(w/2);
-        var newY2 = this.geodesic.m.r*Math.sin(this.alpha) - this.geodesic.m.y/(w/2);
-        //if (abs(this.pt.x - newX1) < abs(this.pt.x - newX2))
-            newX = newX1;
-        //else
-          //  newX = newX2;
 
-        newY = newY1;
+        var newX = this.geodesic.m.x/(w/2) + this.geodesic.m.r * Math.cos(this.alpha);
+        var newY = this.geodesic.m.y/(w/2) + this.geodesic.m.r * Math.sin(this.alpha);
+
         this.pt.v1 = alpha_orient * (newY - this.geodesic.m.y/(w/2));
-        this.pt.v2 = -alpha_orient *(newY - this.geodesic.m.x/(w/2));
+        this.pt.v2 = -alpha_orient * (newX - this.geodesic.m.x/(w/2));
+
         this.pt.x = newX;
         this.pt.y = newY;
     }
