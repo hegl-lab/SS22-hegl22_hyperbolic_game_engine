@@ -1,5 +1,5 @@
 class Ship{
-    constructor(x,y,r){
+    constructor(x,y,r,color){
         this.pos = createVector(x,y) //position of the triangle
         this.radius = r; //size of the triangle
         this.heading = createVector(1,1); //direction as a vector, needed to construct geodesic
@@ -10,20 +10,21 @@ class Ship{
         this.alpha = this.calculateAlpha(); //calculate angle for position on geodesic
         this.boosting = false;
         this.vel = createVector(0,0);
+        this.color = color;
     }
 
     show() { 
         push(); // show the calculated geodesic
         //this.geodesic.show();
         pop()
-        // show the spaceship as a red triangle
+        // show the spaceship as a triangle
         push();
         var res = constructCanvasPosRadius(this.pos.x,this.pos.y,this.radius);
         var b = res[0];
         var l = res[1] * w;
 
-        stroke(255,0,0);
-        fill(255,0,0);
+        stroke(this.color[0],this.color[1],this.color[2]);
+        fill(this.color[0],this.color[1],this.color[2]);
         translate(b[0]*w/2,  b[1] * w/2); //pos evtl. an canvas anpassen
         rotate(Math.atan2(this.heading.y, this.heading.x) + PI/2);
         triangle(-l,l,l,l,0,-l*3/2);
@@ -71,17 +72,8 @@ class Ship{
             var newX = this.geodesic.x/(w/2) + this.geodesic.r*Math.cos(this.alpha);
             var newY = this.geodesic.y/(w/2) + this.geodesic.r*Math.sin(this.alpha);
 
-            var dist1 = sqrt(sq(this.pos.x)+sq(this.pos.y));
             //set new position
             this.pos = createVector(newX,newY);
-
-            var dist2 = sqrt(sq(this.pos.x)+sq(this.pos.y));
-            //calculate radius change
-            /*var del_radius = 0.00000015*(sq(poincareDisk.r) - (sq(this.pos.x)+sq(this.pos.y)));
-            if (dist1<dist2)
-                this.radius = this.radius - del_radius;
-            else
-                this.radius = this.radius + del_radius;*/
             //set new heading
             this.heading = createVector(alpha_orient * (this.pos.y - this.geodesic.y/(w/2)), -alpha_orient *(this.pos.x - this.geodesic.x/(w/2)));
         }

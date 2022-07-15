@@ -1,13 +1,12 @@
 var w = 600;
 var ship;
 var ship2;
-var asteroids = [];
 var lasers = [];
 var lasers2 = [];
 var eps = 0.0005;
 
-var score = 0;
-var level = 1;
+var gameover = 0;
+var tag;
 
 
 let poincareDisk, geodesic;
@@ -15,23 +14,9 @@ let poincareDisk, geodesic;
 function setup() {
     createCanvas( w, w );
     poincareDisk = new Circle(0,0,1);
-
-    for(let i = 0; i<10; i++){
-        var x = random(-1,1);
-        var y = random(-1,1);
-        var v1 = random(-1,1);
-        var v2 = random(-1,1);
-        var speed = random(-10,10);
-        if (speed == 0)
-            speed += 1;
-        if (Math.sqrt(sq(x)+sq(y)) < 1)
-            asteroids.push(new PointMovingOnGeodesic(x,y,v1,v2,0.03,poincareDisk,0.0015, [0,0,255]));
-        else
-            asteroids.push(new PointMovingOnGeodesic(x,0,v1,v2,0.03,poincareDisk,0.0015, [0,0,255]));
-    }
    
-    ship = new Ship(0.5,-0.5,0.025);
-    ship2 = new Ship(-0.5,0.5,0.025);
+    ship = new Ship(0.5,-0.5,0.025,[255,0,0]);
+    ship2 = new Ship(-0.5,0.5,0.025,[0,0,255]);
 }
 
 function draw() {
@@ -40,70 +25,66 @@ function draw() {
     translate(w/2,w/2);
     scale(1, -1);
     poincareDisk.show();
-    for(let i=0; i<asteroids.length; i++){
-        asteroids[i].show();
-        asteroids[i].move();
-        //asterois to close to boundary --> remove from list
-        if(Math.sqrt(sq(asteroids[i].pt.x)+sq(asteroids[i].pt.y)) >= 1-eps){
-            asteroids.splice(i,1);
-            break;
-        }
-    }
 
-    ship.show();
-    ship.turn();
-    ship.move();
+    if (gameover == 0){ //not game over
+        ship.show();
+        ship.turn();
+        ship.move();
 
-    ship2.show();
-    ship2.turn();
-    ship2.move();
+        ship2.show();
+        ship2.turn();
+        ship2.move();
 
-    for(let i=0; i<lasers.length; i++){
-        lasers[i].show();
-        lasers[i].move();
-        //laser to close to boundary --> remove
-        if (Math.sqrt(sq(lasers[i].pt.x)+sq(lasers[i].pt.y)) >= 1-eps){
-            lasers.splice(i,1);
-            break;
-        }
-        //collision detection with asteroid
-        for(let j=0; j<asteroids.length; j++){
-            if(collisionDetection(lasers[i].pt.x,lasers[i].pt.y,lasers[i].pt.r, asteroids[j].pt.x, asteroids[j].pt.y, asteroids[j].pt.r)){
-                score+=10;
-                //remove asteroids and lasers from list
-                asteroids.splice(j,1);
-                lasers.splice(i,1); 
-                break;
-            }
-        }
-
-    }
-
-    for(let i=0; i< lasers2.length; i++){
-        lasers2[i].show();
-        lasers2[i].move();
-        //is laser close to boundary --> remove
-        if (Math.sqrt(sq(lasers2[i].pt.x)+sq(lasers2[i].pt.y)) >= 1-eps){
-            lasers2.splice(i,1);
-            break;
-        }
-        for(let j=0; j<asteroids.length; j++){
-            if(collisionDetection(lasers2[i].pt.x,lasers2[i].pt.y,lasers2[i].pt.r, asteroids[j].pt.x, asteroids[j].pt.y, asteroids[j].pt.r)){
-                score+=10;
-                //remove asteroids and lasers from list
-                asteroids.splice(j,1);
+        for(let i=0; i<lasers.length; i++){
+            lasers[i].show();
+            lasers[i].move();
+            //laser to close to boundary --> remove
+            if (Math.sqrt(sq(lasers[i].pt.x)+sq(lasers[i].pt.y)) >= 1-eps){
                 lasers.splice(i,1);
                 break;
             }
-        }
-    }
-    
 
-    for(let i=0; i<asteroids.length; i++){
-        var point1 = asteroids[i].pt;
-        var collide = collisionDetection(point1.x,point1.y,point1.r, ship.pos.x, ship.pos.y, ship.radius*2);
-        if (collide == true)
-            console.log('collision')
+            if(collisionDetection(lasers[i].pt.x,lasers[i].pt.y,lasers[i].pt.r, ship2.pos.x, ship2.pos.y, ship2.radius*2)){
+                //GAME OVER
+                gameover = 1;
+                break;
+            }
+
+            //collision detection with other lasers
+            for(let j=0; j<lasers2.length; j++){
+                if(collisionDetection(lasers[i].pt.x,lasers[i].pt.y,lasers[i].pt.r, lasers2[j].pt.x, lasers2[j].pt.y, lasers2[j].pt.r)){
+                    //remove lasers from list
+                    lasers2.splice(j,1);
+                    lasers.splice(i,1); 
+                    break;
+                }
+            }
+
+        }
+
+        for(let i=0; i< lasers2.length; i++){
+            lasers2[i].show();
+            lasers2[i].move();
+            //is laser close to boundary --> remove
+            if (Math.sqrt(sq(lasers2[i].pt.x)+sq(lasers2[i].pt.y)) >= 1-eps){
+                lasers2.splice(i,1);
+                break;
+            }
+            
+            if(collisionDetection(lasers2[i].pt.x,lasers2[i].pt.y,lasers2[i].pt.r, ship.pos.x, ship.pos.y, ship.radius*2)){
+                //GAME OVER
+                gameover = 2;
+                break;
+            } 
+        }
+    
+    }
+    else{ //game over 
+        if(gameover == 1)
+            tag = createP("Player 1 won (red ship)");
+        else    
+            tag = createP("Player 2 won (blue ship)");
+        tag.position(230,100);
     }
 }
 
@@ -129,10 +110,14 @@ function keyPressed(){
 }
 
 function keyReleased(){
-    ship.setRotation(0);
-    ship.setBoostingState(false);
-    ship2.setRotation(0);
-    ship2.setBoostingState(false);
+    if (keyCode == RIGHT_ARROW || keyCode == LEFT_ARROW || keyCode == UP_ARROW){
+        ship.setRotation(0);
+        ship.setBoostingState(false);
+    }
+    if (keyCode == 65 || keyCode == 68 || keyCode == 87){
+        ship2.setRotation(0);
+        ship2.setBoostingState(false);
+    }
 }
 
 
