@@ -43,7 +43,11 @@ function draw() {
     for(let i=0; i<asteroids.length; i++){
         asteroids[i].show();
         asteroids[i].move();
-        //schauen ob nah genug am Rand, wenn ja aus Liste entfernen
+        //asterois to close to boundary --> remove from list
+        if(Math.sqrt(sq(asteroids[i].pt.x)+sq(asteroids[i].pt.y)) >= 1-eps){
+            asteroids.splice(i,1);
+            break;
+        }
     }
 
     ship.show();
@@ -57,7 +61,7 @@ function draw() {
     for(let i=0; i<lasers.length; i++){
         lasers[i].show();
         lasers[i].move();
-        //is laser close to boundary --> remove
+        //laser to close to boundary --> remove
         if (Math.sqrt(sq(lasers[i].pt.x)+sq(lasers[i].pt.y)) >= 1-eps){
             lasers.splice(i,1);
             break;
@@ -68,8 +72,7 @@ function draw() {
                 score+=10;
                 //remove asteroids and lasers from list
                 asteroids.splice(j,1);
-                lasers.splice(i,1);
-                console.log(score);
+                lasers.splice(i,1); 
                 break;
             }
         }
@@ -83,6 +86,15 @@ function draw() {
         if (Math.sqrt(sq(lasers2[i].pt.x)+sq(lasers2[i].pt.y)) >= 1-eps){
             lasers2.splice(i,1);
             break;
+        }
+        for(let j=0; j<asteroids.length; j++){
+            if(collisionDetection(lasers2[i].pt.x,lasers2[i].pt.y,lasers2[i].pt.r, asteroids[j].pt.x, asteroids[j].pt.y, asteroids[j].pt.r)){
+                score+=10;
+                //remove asteroids and lasers from list
+                asteroids.splice(j,1);
+                lasers.splice(i,1);
+                break;
+            }
         }
     }
     
@@ -104,7 +116,7 @@ function keyPressed(){
     } else if (keyCode == UP_ARROW){
         ship.setBoostingState(true);
     } else if (key == ' '){ //create lasers
-        lasers.push(new PointMovingOnGeodesic(ship.pos.x,ship.pos.y,ship.heading.x,ship.heading.y,0.025,poincareDisk,0.015, [0,255,0]));
+        lasers.push(new PointMovingOnGeodesic(ship.pos.x,ship.pos.y,ship.heading.x,ship.heading.y,0.025,poincareDisk,0.015, [255,125,0]));
     } else if (keyCode == 65){ // a = left
         ship2.setRotation(0.05);
     } else if (keyCode == 68){ // d = right
@@ -112,7 +124,7 @@ function keyPressed(){
     } else if (keyCode == 87){ // w = boost
         ship2.setBoostingState(true);
     } else if (keyCode == 16){ // SHIFT = create laser
-        lasers2.push(new PointMovingOnGeodesic(ship2.pos.x,ship2.pos.y,ship2.heading.x,ship2.heading.y,0.025,poincareDisk,0.015, [0,255,0]));
+        lasers2.push(new PointMovingOnGeodesic(ship2.pos.x,ship2.pos.y,ship2.heading.x,ship2.heading.y,0.025,poincareDisk,0.015, [0,125,255]));
     } 
 }
 

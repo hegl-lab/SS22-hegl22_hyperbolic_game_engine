@@ -32,7 +32,7 @@ class PointMovingOnGeodesic {
 
     show() {
         push();
-        if (Math.sqrt(this.pt.x*this.pt.x + this.pt.y*this.pt.y) < 1){ //only points in the poincare disc are shown{
+        if (Math.sqrt(this.pt.x*this.pt.x + this.pt.y*this.pt.y) < 1){ //only points in the poincare disc are shown
             this.pt.show();
         }  
         //this.geodesic.show();
@@ -41,7 +41,6 @@ class PointMovingOnGeodesic {
 
     move() { //PUNKTE VERSCHWINDEN EINFACH SO...
         var del_alpha = this.speed * (1 - (sq(this.pt.x)+sq(this.pt.y)))/(2*this.geodesic.m.r);
-        //this.alpha = this.alpha + del_alpha;
         var cross_prod = this.pt.v1 * (this.pt.y - this.geodesic.m.y/(w/2)) - this.pt.v2 * (this.pt.x - this.geodesic.m.x/(w/2));
         var alpha_orient = Math.sign(cross_prod);
         this.alpha = this.alpha - alpha_orient * del_alpha;
