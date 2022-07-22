@@ -1,32 +1,40 @@
+//size of canvas
 var w = 600;
+
+//variables for the objects
+var poincareDisk;
 var ship;
 var ship2;
 var lasers = [];
 var lasers2 = [];
+
 var eps = 0.0005;
 
 var gameover = 0;
 var tag;
 
-
-let poincareDisk, geodesic;
-
 function setup() {
-    createCanvas( w, w );
+    createCanvas(w, w);
+    
+    //set the poincare disk as a unit circle
     poincareDisk = new Circle(0,0,1);
    
-    ship = new Ship(0.5,-0.5,0.025,[255,0,0]);
-    ship2 = new Ship(-0.5,0.5,0.025,[0,0,255]);
+    //create two ship, that can be steered
+    ship = new Ship(0.5,-0.5,0.025,[255,0,0]); //red
+    ship2 = new Ship(-0.5,0.5,0.025,[0,0,255]); //blue
 }
 
 function draw() {
     background( 240 );
-
     translate(w/2,w/2);
     scale(1, -1);
+    
+    //show poincare disc
     poincareDisk.show();
 
+    //has one player alreads won?
     if (gameover == 0){ //not game over
+        //show and transform position of both ships
         ship.show();
         ship.turn();
         ship.move();
@@ -35,6 +43,7 @@ function draw() {
         ship2.turn();
         ship2.move();
 
+        //show and move lasers along geodesics
         for(let i=0; i<lasers.length; i++){
             lasers[i].show();
             lasers[i].move();
@@ -44,6 +53,7 @@ function draw() {
                 break;
             }
 
+            //is ship2 shot by ship1?
             if(collisionDetection(lasers[i].pt.x,lasers[i].pt.y,lasers[i].pt.r, ship2.pos.x, ship2.pos.y, ship2.radius*2)){
                 //GAME OVER
                 gameover = 1;
@@ -71,6 +81,7 @@ function draw() {
                 break;
             }
             
+            //is ship shot by ship2?
             if(collisionDetection(lasers2[i].pt.x,lasers2[i].pt.y,lasers2[i].pt.r, ship.pos.x, ship.pos.y, ship.radius*2)){
                 //GAME OVER
                 gameover = 2;
@@ -78,17 +89,17 @@ function draw() {
             } 
         }
     
-    }
-    else{ //game over 
+    } else { //game over 
         if(gameover == 1)
             tag = createP("Player 1 won (red ship)");
         else    
             tag = createP("Player 2 won (blue ship)");
+        //show tag
         tag.position(230,100);
     }
 }
 
-
+//steering of the ships and shooting lasers
 function keyPressed(){
     if(keyCode == RIGHT_ARROW){
         ship.setRotation(-0.05);
@@ -109,7 +120,7 @@ function keyPressed(){
     } 
 }
 
-function keyReleased(){
+function keyReleased(){ //makes sure that other player does not effect the steering of the other ship
     if (keyCode == RIGHT_ARROW || keyCode == LEFT_ARROW || keyCode == UP_ARROW){
         ship.setRotation(0);
         ship.setBoostingState(false);
@@ -121,14 +132,7 @@ function keyReleased(){
 }
 
 
-
-function hyperbolicDistance(x1,y1,x2,y2){ //p1 = (x1,y1); p2 = (x2,y2)
-    var delta = 2*sq(poincareDisk.r)*((sq(x1-x2)+sq(y1-y2))/((sq(poincareDisk.r)-(sq(x1)+sq(y1)))*(sq(poincareDisk.r)-(sq(x2)+sq(y2)))))
-    var distance = Math.acosh(1+delta);
-    return distance;
-}
-
-
+//collision detection using the hyperbolic distance and the outer circle of the objects
 function collisionDetection(x1,y1,r1,x2,y2,r2){ //p1 = (x1,y1) with radius r1; p2 = (x2,y2) with radius r2
     var distancePoints = hyperbolicDistance(x1,y1,x2,y2);
     if (distancePoints < r1+r2)
