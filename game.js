@@ -1,4 +1,3 @@
-
 //size of canvas
 var w = 600; 
 
@@ -113,12 +112,6 @@ function keyReleased(){
     ship.setBoostingState(false);
 }
 
-
-//calculate hyperbolic distance between two points
-function hyperbolicDistance(x1,y1,x2,y2){ //p1 = (x1,y1); p2 = (x2,y2)
-    var delta = 2*sq(poincareDisk.r)*((sq(x1-x2)+sq(y1-y2))/((sq(poincareDisk.r)-(sq(x1)+sq(y1)))*(sq(poincareDisk.r)-(sq(x2)+sq(y2)))));
-    return Math.acosh(1+delta);
-}
 
 //collision detection using the hyperbolic distance and the outer circle of the objects
 function collisionDetection(x1,y1,r1,x2,y2,r2){ //p1 = (x1,y1) with radius r1; p2 = (x2,y2) with radius r2
