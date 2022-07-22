@@ -1,21 +1,27 @@
-var w = 600;
+
+//size of canvas
+var w = 600; 
+
+//variables for the objects
+var poincareDisk;
 var ship;
-var ship2;
 var asteroids = [];
 var lasers = [];
-var lasers2 = [];
+
 var eps = 0.0005;
 
+//scoring and level
 var score = 0;
 var level = 1;
 
 
-let poincareDisk, geodesic;
-
 function setup() {
-    createCanvas( w, w );
+    createCanvas(w, w);
+
+    //set the poincare disk as a unit circle
     poincareDisk = new Circle(0,0,1);
 
+    //create randomly set asteroids
     for(let i = 0; i<10; i++){
         var x = random(-1,1);
         var y = random(-1,1);
@@ -30,16 +36,19 @@ function setup() {
             asteroids.push(new PointMovingOnGeodesic(x,0,v1,v2,0.03,poincareDisk,0.0015, [0,0,255]));
     }
    
+    //create ship, that can be steered
     ship = new Ship(0.5,-0.5,0.025);
-    ship2 = new Ship(-0.5,0.5,0.025);
 }
 
 function draw() {
-    background( 240 );
-
+    background(240);
     translate(w/2,w/2);
     scale(1, -1);
+
+    //show poincare disc
     poincareDisk.show();
+
+    //show and move asteroids along geodesics
     for(let i=0; i<asteroids.length; i++){
         asteroids[i].show();
         asteroids[i].move();
@@ -50,18 +59,16 @@ function draw() {
         }
     }
 
+    //show and transform position of the ship
     ship.show();
     ship.turn();
     ship.move();
 
-    ship2.show();
-    ship2.turn();
-    ship2.move();
-
+    //show and move lasers along geodesics
     for(let i=0; i<lasers.length; i++){
         lasers[i].show();
         lasers[i].move();
-        //laser to close to boundary --> remove
+        //laser to close to boundary --> remove from list
         if (Math.sqrt(sq(lasers[i].pt.x)+sq(lasers[i].pt.y)) >= 1-eps){
             lasers.splice(i,1);
             break;
@@ -78,27 +85,8 @@ function draw() {
         }
 
     }
-
-    for(let i=0; i< lasers2.length; i++){
-        lasers2[i].show();
-        lasers2[i].move();
-        //is laser close to boundary --> remove
-        if (Math.sqrt(sq(lasers2[i].pt.x)+sq(lasers2[i].pt.y)) >= 1-eps){
-            lasers2.splice(i,1);
-            break;
-        }
-        for(let j=0; j<asteroids.length; j++){
-            if(collisionDetection(lasers2[i].pt.x,lasers2[i].pt.y,lasers2[i].pt.r, asteroids[j].pt.x, asteroids[j].pt.y, asteroids[j].pt.r)){
-                score+=10;
-                //remove asteroids and lasers from list
-                asteroids.splice(j,1);
-                lasers.splice(i,1);
-                break;
-            }
-        }
-    }
     
-
+    //collision detection with ship and asteroids
     for(let i=0; i<asteroids.length; i++){
         var point1 = asteroids[i].pt;
         var collide = collisionDetection(point1.x,point1.y,point1.r, ship.pos.x, ship.pos.y, ship.radius*2);
@@ -107,7 +95,7 @@ function draw() {
     }
 }
 
-
+//steering of the ship and shooting lasers
 function keyPressed(){
     if(keyCode == RIGHT_ARROW){
         ship.setRotation(-0.05);
@@ -117,33 +105,22 @@ function keyPressed(){
         ship.setBoostingState(true);
     } else if (key == ' '){ //create lasers
         lasers.push(new PointMovingOnGeodesic(ship.pos.x,ship.pos.y,ship.heading.x,ship.heading.y,0.025,poincareDisk,0.015, [255,125,0]));
-    } else if (keyCode == 65){ // a = left
-        ship2.setRotation(0.05);
-    } else if (keyCode == 68){ // d = right
-        ship2.setRotation(-0.05);
-    } else if (keyCode == 87){ // w = boost
-        ship2.setBoostingState(true);
-    } else if (keyCode == 16){ // SHIFT = create laser
-        lasers2.push(new PointMovingOnGeodesic(ship2.pos.x,ship2.pos.y,ship2.heading.x,ship2.heading.y,0.025,poincareDisk,0.015, [0,125,255]));
     } 
 }
 
 function keyReleased(){
     ship.setRotation(0);
     ship.setBoostingState(false);
-    ship2.setRotation(0);
-    ship2.setBoostingState(false);
 }
 
 
-
+//calculate hyperbolic distance between two points
 function hyperbolicDistance(x1,y1,x2,y2){ //p1 = (x1,y1); p2 = (x2,y2)
-    var delta = 2*sq(poincareDisk.r)*((sq(x1-x2)+sq(y1-y2))/((sq(poincareDisk.r)-(sq(x1)+sq(y1)))*(sq(poincareDisk.r)-(sq(x2)+sq(y2)))))
-    var distance = Math.acosh(1+delta);
-    return distance;
+    var delta = 2*sq(poincareDisk.r)*((sq(x1-x2)+sq(y1-y2))/((sq(poincareDisk.r)-(sq(x1)+sq(y1)))*(sq(poincareDisk.r)-(sq(x2)+sq(y2)))));
+    return Math.acosh(1+delta);
 }
 
-
+//collision detection using the hyperbolic distance and the outer circle of the objects
 function collisionDetection(x1,y1,r1,x2,y2,r2){ //p1 = (x1,y1) with radius r1; p2 = (x2,y2) with radius r2
     var distancePoints = hyperbolicDistance(x1,y1,x2,y2);
     if (distancePoints < r1+r2)
