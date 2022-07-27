@@ -12,6 +12,7 @@ var eps = 0.0005;
 //scoring and level
 var score = 0;
 var level = 1;
+var tag;
 
 
 function setup() {
@@ -92,6 +93,9 @@ function draw() {
         if (collide == true)
             console.log('collision')
     }
+
+    tag = createP("Score: "+ score); // refresh muss noch eingefügt werden
+    tag.position(20,20);
 }
 
 //steering of the ship and shooting lasers
