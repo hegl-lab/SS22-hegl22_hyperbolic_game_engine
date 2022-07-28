@@ -1,4 +1,4 @@
-# hegl22_hyperbolic_game_engine
+# Hyperbolic Game Engine
 
 The goal of this project was to design a 2D hyperbolic game engine in p5.js using the Poincaré disk as the hyperbolic model. The inspiration for the game engine came from the arcade game “Asteroids”. In that game one can steer a spaceship and shoot lasers on flying asteroids to get points and reach different levels.  
 
